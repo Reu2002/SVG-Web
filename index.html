@@ -7,11 +7,8 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter & Montserrat -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <script>
@@ -28,11 +25,8 @@
               base: '#0B0F17',
               card: '#131B2A',
               border: '#1E293B',
-              accent: '#10B981', // Smaragdgrün
+              accent: '#10B981',
               accentHover: '#059669',
-              gold: '#F59E0B',
-              silver: '#94A3B8',
-              bronze: '#D97706',
             }
           }
         }
@@ -50,21 +44,10 @@
       color: #F8FAFC;
     }
     
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0B0F17;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1E293B;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0B0F17; }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
     .glass-card {
       background: rgba(19, 27, 42, 0.75);
@@ -74,7 +57,7 @@
     }
 
     .tab-btn {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease-in-out;
     }
     
     .tab-btn.active {
@@ -82,10 +65,6 @@
       color: #10B981;
       border-color: rgba(16, 185, 129, 0.4);
       box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
-    }
-
-    .glow-accent {
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
     }
   </style>
 </head>
@@ -96,7 +75,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         
-        <!-- Logo -->
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <i class="fa-solid fa-bullseye text-slate-950 text-xl font-bold"></i>
@@ -111,9 +89,8 @@
           </div>
         </div>
 
-        <!-- Refresh Button -->
-        <button id="refreshBtn" onclick="loadDataFromSheets()" class="group relative px-4 py-2 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 rounded-xl flex items-center gap-2.5 border border-slate-700/60 transition shadow-sm text-sm font-medium">
-          <i class="fa-solid fa-rotate text-emerald-400 group-hover:rotate-180 transition-transform duration-500" id="refreshIcon"></i>
+        <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 rounded-xl flex items-center gap-2.5 border border-slate-700/60 transition shadow-sm text-sm font-medium">
+          <i class="fa-solid fa-rotate text-emerald-400" id="refreshIcon"></i>
           <span>Aktualisieren</span>
         </button>
       </div>
@@ -139,7 +116,6 @@
   <!-- Main Content Area -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
     
-    <!-- Status Meldung -->
     <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all">
       <div class="flex items-center gap-3">
         <i id="statusIcon" class="fa-solid fa-circle-info text-lg"></i>
@@ -153,35 +129,31 @@
     <!-- Reiter 1: Spielplan -->
     <section id="content-matches" class="space-y-6">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
-        </div>
+        <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
         
-        <!-- Filterleiste -->
         <div class="flex flex-wrap items-center gap-2.5 glass-card p-2 rounded-2xl">
           <div class="flex items-center gap-1.5 text-slate-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-emerald-400"></i> Filter:
           </div>
           
-          <select id="filterMatchday" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 transition cursor-pointer">
+          <select id="filterMatchday" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
             <option value="">Spieltag</option>
           </select>
 
-          <select id="filterDate" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 transition cursor-pointer">
+          <select id="filterDate" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
             <option value="">Datum</option>
           </select>
 
-          <select id="filterLocation" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 transition cursor-pointer">
+          <select id="filterLocation" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
             <option value="">Spielort</option>
           </select>
 
-          <button onclick="resetMatchFilters()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/80 transition flex items-center gap-1.5" title="Filter zurücksetzen">
+          <button onclick="resetMatchFilters()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/80 transition flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left text-emerald-400"></i> Reset
           </button>
         </div>
       </div>
 
-      <!-- Tabelle -->
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-300">
@@ -196,9 +168,7 @@
                 <th class="px-6 py-4 text-center">Ergebnis</th>
               </tr>
             </thead>
-            <tbody id="matchesTable" class="divide-y divide-slate-800/50">
-              <!-- Dynamische Daten -->
-            </tbody>
+            <tbody id="matchesTable" class="divide-y divide-slate-800/50"></tbody>
           </table>
         </div>
       </div>
@@ -206,45 +176,38 @@
 
     <!-- Reiter 2: Spielerdatenbank -->
     <section id="content-players" class="space-y-6 hidden">
-      <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-white">Spielerdatenbank</h2>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg">
+      <h2 class="text-2xl font-bold text-white">Spielerdatenbank</h2>
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-300">
-            <thead class="bg-slate-800/60 text-slate-400 uppercase text-xs">
+            <thead class="bg-slate-800/50 text-slate-400 uppercase text-xs">
               <tr>
                 <th class="px-6 py-3">ID</th>
                 <th class="px-6 py-3">Name</th>
                 <th class="px-6 py-3">Team</th>
               </tr>
             </thead>
-            <tbody id="playersTable" class="divide-y divide-slate-800">
-              <!-- Dynamische Daten -->
-            </tbody>
+            <tbody id="playersTable" class="divide-y divide-slate-800"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- Reiter 3: Averages & Statistiken -->
+    <!-- Reiter 3: Averages -->
     <section id="content-stats" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Averages & Leistung</h2>
-          <p class="text-xs text-slate-400 mt-1">Leistungsdaten und Saisondurchschnitte im Überblick</p>
         </div>
         
-        <!-- Controls -->
         <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
           <label for="statsSortSelect" class="text-xs text-slate-400 pl-2 font-medium flex items-center gap-1.5">
             <i class="fa-solid fa-arrow-down-wide-short text-emerald-400"></i> Sortieren:
           </label>
-          <select id="statsSortSelect" onchange="renderStats()" class="bg-slate-800/90 text-slate-200 text-xs rounded-lg px-3 py-1.5 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <select id="statsSortSelect" onchange="renderStats()" class="bg-slate-800/90 text-slate-200 text-xs rounded-lg px-3 py-1.5 border border-slate-700/80 focus:outline-none cursor-pointer">
             <option value="avg-desc">Höchster Saisonaverage</option>
             <option value="avg-asc">Niedrigster Saisonaverage</option>
             <option value="first9-desc">Höchster Saison-First 9</option>
-            <option value="first9-asc">Niedrigster Saison-First 9</option>
             <option value="games-desc">Meiste Spiele</option>
           </select>
         </div>
@@ -263,9 +226,7 @@
                 <th class="px-6 py-4">Saison-First 9</th>
               </tr>
             </thead>
-            <tbody id="statsTable" class="divide-y divide-slate-800/50">
-              <!-- Dynamische Daten -->
-            </tbody>
+            <tbody id="statsTable" class="divide-y divide-slate-800/50"></tbody>
           </table>
         </div>
       </div>
@@ -274,17 +235,13 @@
     <!-- Reiter 4: Bestleistungen -->
     <section id="content-records" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
-          <p class="text-xs text-slate-400 mt-1">Highscores, Highfinishes und Shortgames der Saison</p>
-        </div>
+        <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
         
-        <!-- Controls -->
         <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
           <label for="recordsSortSelect" class="text-xs text-slate-400 pl-2 font-medium flex items-center gap-1.5">
             <i class="fa-solid fa-arrow-down-wide-short text-emerald-400"></i> Sortieren:
           </label>
-          <select id="recordsSortSelect" onchange="renderRecords()" class="bg-slate-800/90 text-slate-200 text-xs rounded-lg px-3 py-1.5 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <select id="recordsSortSelect" onchange="renderRecords()" class="bg-slate-800/90 text-slate-200 text-xs rounded-lg px-3 py-1.5 border border-slate-700/80 focus:outline-none cursor-pointer">
             <option value="180-desc">Meiste 180er</option>
             <option value="140-desc">Meiste 140+</option>
             <option value="shortgame-desc">Meiste Shortgames</option>
@@ -305,9 +262,7 @@
                 <th class="px-6 py-4">Highfinishes</th>
               </tr>
             </thead>
-            <tbody id="recordsTable" class="divide-y divide-slate-800/50">
-              <!-- Dynamische Daten -->
-            </tbody>
+            <tbody id="recordsTable" class="divide-y divide-slate-800/50"></tbody>
           </table>
         </div>
       </div>
@@ -316,13 +271,11 @@
   </main>
 
   <!-- Player Profile Modal -->
-  <div id="playerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-all">
-    <div class="glass-card bg-slate-900/95 border border-slate-700/60 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl transform transition-all">
-      
-      <!-- Modal Header -->
+  <div id="playerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-slate-900/95 border border-slate-700/60 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
       <div class="bg-gradient-to-r from-emerald-950/60 via-slate-900 to-slate-900 p-6 border-b border-slate-800 flex justify-between items-start">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400 font-bold text-xl shadow-inner">
+          <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400 font-bold text-xl">
             <i class="fa-solid fa-user"></i>
           </div>
           <div>
@@ -330,27 +283,23 @@
             <p id="modalPlayerTeam" class="text-xs font-semibold text-emerald-400 mt-0.5 uppercase tracking-wider"></p>
           </div>
         </div>
-        <button onclick="closePlayerModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800/60 transition">
+        <button onclick="closePlayerModal()" class="text-slate-400 hover:text-white p-2">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 space-y-5">
-        
-        <!-- Averages Cards -->
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-2xl text-center relative overflow-hidden">
+          <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-2xl text-center">
             <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Saison-Average</div>
             <div id="modal3DartAvg" class="text-3xl font-black font-display text-emerald-400">-</div>
           </div>
-          <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-2xl text-center relative overflow-hidden">
+          <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-2xl text-center">
             <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Saison First 9</div>
             <div id="modalFirst9Avg" class="text-3xl font-black font-display text-slate-200">-</div>
           </div>
         </div>
 
-        <!-- Scores Grid -->
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl flex items-center justify-between">
             <div class="flex items-center gap-2.5">
@@ -368,43 +317,32 @@
           </div>
         </div>
 
-        <!-- Special Highlights -->
         <div class="space-y-2.5">
           <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-              <i class="fa-solid fa-bullseye text-emerald-400 mr-1.5"></i> Highfinishes (100+)
-            </span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
             <span id="modalHighfinish" class="text-xs font-semibold text-emerald-400 block break-words">Keine vorhanden</span>
           </div>
 
           <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-              <i class="fa-solid fa-bolt text-cyan-400 mr-1.5"></i> Shortgames (&le; 18 Darts)
-            </span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
             <span id="modalShortgames" class="text-xs font-semibold text-cyan-300 block break-words">Keine vorhanden</span>
           </div>
         </div>
       </div>
 
-      <!-- Modal Footer -->
       <div class="bg-slate-900/80 px-6 py-4 border-t border-slate-800/80 text-right">
-        <button onclick="closePlayerModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition shadow-sm">
+        <button onclick="closePlayerModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">
           Schließen
         </button>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Logik -->
   <script>
     const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxRXqyKR_bVMRW5vs4AKkah07cobEFhouGdeflFjl3CtA4SVV30_wqk3q2qjz6YFMdP/exec";
+    const CACHE_KEY = "svg_darts_app_data_v2";
 
-    let appData = {
-      matches: [],
-      players: [],
-      stats: [],
-      records: []
-    };
+    let appData = { matches: [], players: [], stats: [], records: [] };
 
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
@@ -415,96 +353,50 @@
     function formatDate(dateVal) {
       if (!dateVal || dateVal === '-') return '-';
       let str = String(dateVal).trim();
-      
-      if (str.includes('T')) {
-        str = str.split('T')[0];
-      } else if (str.includes(' ')) {
-        str = str.split(' ')[0];
-      }
-
+      if (str.includes('T')) str = str.split('T')[0];
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
         const parts = str.split('-');
         return `${parts[2]}.${parts[1]}.${parts[0]}`;
       }
-
-      if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(str)) {
-        const parts = str.split('.');
-        return `${parts[0].padStart(2, '0')}.${parts[1].padStart(2, '0')}.${parts[2]}`;
-      }
-
-      const d = new Date(dateVal);
-      if (!isNaN(d.getTime())) {
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}.${month}.${year}`;
-      }
-
       return str;
     }
 
-    // Hilfsfunktion zur Formatierung der Uhrzeit im hh:mm Format
     function formatTime(timeVal) {
       if (!timeVal || timeVal === '-') return '-';
       let str = String(timeVal).trim();
-      
-      // Falls ISO Date oder vollständiges Datum/Zeit übergeben wird
-      if (str.includes('T')) {
-        const timePart = str.split('T')[1];
-        if (timePart) str = timePart.split('.')[0];
-      } else if (str.includes(' ') && str.includes(':')) {
-        str = str.split(' ')[1];
-      }
-
       const timeMatch = str.match(/(\d{1,2}):(\d{2})/);
-      if (timeMatch) {
-        const hours = timeMatch[1].padStart(2, '0');
-        const minutes = timeMatch[2];
-        return `${hours}:${minutes}`;
-      }
-
-      return str;
+      return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
     }
 
     function switchTab(tabId) {
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-
+      
       const targetContent = document.getElementById(`content-${tabId}`);
       const targetTab = document.getElementById(`tab-${tabId}`);
-
+      
       if (targetContent) targetContent.classList.remove('hidden');
       if (targetTab) targetTab.classList.add('active');
     }
 
-    function showStatus(msg, isError = false) {
-      const banner = document.getElementById('statusBanner');
-      const message = document.getElementById('statusMessage');
-      const icon = document.getElementById('statusIcon');
-      
-      banner.className = `p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg border transition-all ${
-        isError 
-          ? 'bg-rose-950/60 text-rose-200 border-rose-800/80' 
-          : 'bg-emerald-950/60 text-emerald-200 border-emerald-800/80'
-      }`;
-      
-      icon.className = `fa-solid ${isError ? 'fa-triangle-exclamation text-rose-400' : 'fa-circle-check text-emerald-400'} text-lg`;
-      message.innerText = msg;
-      banner.classList.remove('hidden');
-    }
+    async function loadDataFromSheets(isManualRefresh = false) {
+      const icon = document.getElementById('refreshIcon');
+      if (icon) icon.classList.add('fa-spin');
 
-    async function loadDataFromSheets() {
-      if (!SHEETS_WEBAPP_URL || SHEETS_WEBAPP_URL.includes("DEINE_GOOGLE_APPS_SCRIPT")) {
-        showStatus("Bitte trage deine Google Apps Script WebApp URL im HTML-Code ein.", true);
-        return;
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached && !isManualRefresh) {
+        try {
+          appData = JSON.parse(cached);
+          populateMatchFilters();
+          renderAllTables();
+        } catch (e) {
+          console.error("Cache Read Error", e);
+        }
       }
 
-      const icon = document.getElementById('refreshIcon');
-      if(icon) icon.classList.add('fa-spin');
-
       try {
-        const response = await fetch(SHEETS_WEBAPP_URL);
-        if (!response.ok) throw new Error("Netzwerkantwort war nicht OK");
+        const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
+        if (!response.ok) throw new Error("Netzwerkfehler");
         
         const data = await response.json();
         
@@ -515,55 +407,29 @@
           records: data.records || []
         };
 
+        localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
         populateMatchFilters();
         renderAllTables();
-        showStatus("Daten erfolgreich aktualisiert.");
       } catch (err) {
-        console.error("Fehler beim Laden:", err);
-        showStatus("Fehler beim Laden der Daten aus Google Sheets: " + err.message, true);
+        console.warn("Backend nicht erreichbar, benutze Offline-Cache:", err);
       } finally {
-        if(icon) icon.classList.remove('fa-spin');
+        if (icon) icon.classList.remove('fa-spin');
       }
     }
 
     function populateMatchFilters() {
-  const matchdaySelect = document.getElementById('filterMatchday');
-  const dateSelect = document.getElementById('filterDate');
-  const locationSelect = document.getElementById('filterLocation');
+      const matchdaySelect = document.getElementById('filterMatchday');
+      const dateSelect = document.getElementById('filterDate');
+      const locationSelect = document.getElementById('filterLocation');
+      if (!matchdaySelect || !dateSelect || !locationSelect) return;
 
-  if (!matchdaySelect || !dateSelect || !locationSelect) return;
+      const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
+      const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))];
 
-  // 1. Spieltage logisch/numerisch sortieren (z. B. "1. Spieltag" vor "10. Spieltag")
-  const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))]
-    .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' }));
-
-  // 2. Datum chronologisch sortieren (von alt nach neu)
-  const parseGermanDate = (dateStr) => {
-    if (!dateStr || dateStr === '-') return 0;
-    const parts = dateStr.split('.');
-    if (parts.length === 3) {
-      return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime() || 0;
+      matchdaySelect.innerHTML = '<option value="">Spieltage</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
+      dateSelect.innerHTML = '<option value="">Datum</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
+      locationSelect.innerHTML = '<option value="">Spielort</option><option value="Göttingen">Göttingen</option><option value="Auswärts">Auswärts</option>';
     }
-    return 0;
-  };
-
-  const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))]
-    .sort((a, b) => parseGermanDate(a) - parseGermanDate(b));
-
-  // Options-Markup befüllen
-  matchdaySelect.innerHTML = '<option value="">Spieltage</option>' + 
-    matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
-
-  dateSelect.innerHTML = '<option value="">Datum</option>' + 
-    dates.map(d => `<option value="${d}">${d}</option>`).join('');
-
-  // 3. Spielort fest auf "Göttingen" und "Auswärts" beschränken
-  locationSelect.innerHTML = `
-    <option value="">Spielort</option>
-    <option value="Göttingen">Göttingen</option>
-    <option value="Auswärts">Auswärts</option>
-  `;
-}
 
     function resetMatchFilters() {
       document.getElementById('filterMatchday').value = "";
@@ -580,201 +446,98 @@
     }
 
     function renderMatches() {
-  const tbody = document.getElementById('matchesTable');
-  if (!appData.matches || !appData.matches.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500 font-medium">Keine Spieltage vorhanden.</td></tr>`;
-    return;
-  }
+      const tbody = document.getElementById('matchesTable');
+      if (!tbody) return;
 
-  const selMatchday = document.getElementById('filterMatchday')?.value;
-  const selDate = document.getElementById('filterDate')?.value;
-  const selLocation = document.getElementById('filterLocation')?.value;
+      const selMatchday = document.getElementById('filterMatchday')?.value;
+      const selDate = document.getElementById('filterDate')?.value;
+      const selLocation = document.getElementById('filterLocation')?.value;
 
-  const filteredMatches = appData.matches.filter(m => {
-    const matchdayMatches = !selMatchday || String(m.matchday) === selMatchday;
-    const dateMatches = !selDate || formatDate(m.date) === selDate;
+      const filtered = appData.matches.filter(m => {
+        const matchdayMatches = !selMatchday || String(m.matchday) === selMatchday;
+        const dateMatches = !selDate || formatDate(m.date) === selDate;
+        let locationMatches = true;
+        if (selLocation) {
+          const loc = String(m.location || '').toLowerCase();
+          locationMatches = selLocation === 'Göttingen' ? loc.includes('göttingen') : !loc.includes('göttingen');
+        }
+        return matchdayMatches && dateMatches && locationMatches;
+      });
 
-    // Logik für Göttingen vs. Auswärts
-    let locationMatches = true;
-    if (selLocation) {
-      const loc = String(m.location || '').trim().toLowerCase();
-      const isGoettingen = loc.includes('göttingen') || loc.includes('gottingen');
-      if (selLocation === 'Göttingen') {
-        locationMatches = isGoettingen;
-      } else if (selLocation === 'Auswärts') {
-        locationMatches = !isGoettingen;
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Keine Spiele gefunden.</td></tr>`;
+        return;
       }
+
+      tbody.innerHTML = filtered.map(m => {
+        const scoreRaw = String(m.score || '-').trim();
+        const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
+        
+        const scoreStyleClass = isZeroZero
+          ? 'bg-amber-950/70 border-amber-600/80 text-amber-400'
+          : 'bg-emerald-950/60 border-emerald-800/80 text-emerald-400';
+
+        return `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
+          <td class="px-6 py-4 text-slate-300">${formatDate(m.date)}</td>
+          <td class="px-6 py-4 text-slate-400">${formatTime(m.time || m.uhrzeit)}</td>
+          <td class="px-6 py-4 text-slate-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 text-white font-medium">${m.home || '-'}</td>
+          <td class="px-6 py-4 text-white font-medium">${m.away || '-'}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm ${scoreStyleClass}">
+              ${m.score || '-'}
+            </span>
+          </td>
+        </tr>
+      `}).join('');
     }
-
-    return matchdayMatches && dateMatches && locationMatches;
-  });
-
-  if (!filteredMatches.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500 font-medium">Keine Spiele für die gewählten Filter gefunden.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = filteredMatches.map(m => {
-    const scoreRaw = String(m.score || '-').trim();
-    const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
-    
-    const scoreStyleClass = isZeroZero
-      ? 'bg-amber-950/70 border-amber-600/80 text-amber-400'
-      : 'bg-emerald-950/60 border-emerald-800/80 text-emerald-400';
-
-    const formattedTime = formatTime(m.time || m.uhrzeit);
-
-    return `
-    <tr class="hover:bg-slate-800/40 transition">
-      <td class="px-6 py-4 font-semibold text-white">
-        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-slate-800 border border-slate-700 text-slate-300">
-          ${m.matchday || '-'}
-        </span>
-      </td>
-      <td class="px-6 py-4 text-slate-300">${formatDate(m.date)}</td>
-      <td class="px-6 py-4 text-slate-400">${formattedTime}</td>
-      <td class="px-6 py-4 text-slate-300">${m.location || '-'}</td>
-      <td class="px-6 py-4 text-white font-medium">${m.home || '-'}</td>
-      <td class="px-6 py-4 text-white font-medium">${m.away || '-'}</td>
-      <td class="px-6 py-4 text-center">
-        <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm tracking-wider ${scoreStyleClass}">
-          ${m.score || '-'}
-        </span>
-      </td>
-    </tr>
-  `}).join('');
-}
 
     function renderPlayers() {
       const tbody = document.getElementById('playersTable');
-      if (!appData.players.length) {
-        tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-slate-500 font-medium">Keine Spieler vorhanden.</td></tr>`;
-        return;
-      }
+      if (!tbody) return;
       tbody.innerHTML = appData.players.map(p => `
         <tr class="hover:bg-slate-800/40 transition">
-          <td class="px-6 py-4 text-xs font-mono text-slate-500">${p.id || '-'}</td>
-          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer transition flex items-center gap-2 group" onclick="openPlayerModal('${p.name}')">
-            <i class="fa-solid fa-circle-user text-slate-500 group-hover:text-emerald-400 transition"></i>
-            <span>${p.name || '-'}</span>
-          </td>
-          <td class="px-6 py-4 text-slate-300 font-medium">${p.team || '-'}</td>
+          <td class="px-6 py-4 text-xs text-slate-500">${p.id || '-'}</td>
+          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
+          <td class="px-6 py-4 text-slate-300">${p.team || '-'}</td>
         </tr>
       `).join('');
     }
 
     function renderStats() {
       const tbody = document.getElementById('statsTable');
-      const sortSelect = document.getElementById('statsSortSelect');
-      const sortValue = sortSelect ? sortSelect.value : 'avg-desc';
-
-      if (!appData.stats || !appData.stats.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500 font-medium">Keine Statistiken vorhanden.</td></tr>`;
-        return;
-      }
-
-      const parseVal = (val) => {
-        if (val === undefined || val === null || val === '-' || val === '') return 0;
-        return parseFloat(String(val).replace(',', '.')) || 0;
-      };
-
-      let sortedStats = [...appData.stats];
-
-      sortedStats.sort((a, b) => {
-        switch (sortValue) {
-          case 'avg-desc': return parseVal(b.avg) - parseVal(a.avg);
-          case 'avg-asc': return parseVal(a.avg) - parseVal(b.avg);
-          case 'first9-desc': return parseVal(b.first9) - parseVal(a.first9);
-          case 'first9-asc': return parseVal(a.first9) - parseVal(b.first9);
-          case 'games-desc': return parseVal(b.games) - parseVal(a.games);
-          default: return 0;
-        }
-      });
-
-      tbody.innerHTML = sortedStats.map((s, idx) => {
-        let badge = `<span class="text-xs font-bold text-slate-500">${idx + 1}</span>`;
-        if (idx === 0) badge = `<i class="fa-solid fa-crown text-amber-400 text-sm"></i>`;
-        else if (idx === 1) badge = `<i class="fa-solid fa-medal text-slate-300 text-sm"></i>`;
-        else if (idx === 2) badge = `<i class="fa-solid fa-award text-amber-600 text-sm"></i>`;
-
-        return `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="px-6 py-4 text-center">${badge}</td>
-            <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer transition" onclick="openPlayerModal('${s.player}')">
-              ${s.player || '-'}
-            </td>
-            <td class="px-6 py-4 text-slate-300">${s.games || 0}</td>
-            <td class="px-6 py-4 text-slate-300">${s.legs || 0}</td>
-            <td class="px-6 py-4 text-emerald-400 font-extrabold font-display">${formatNumber(s.avg)}</td>
-            <td class="px-6 py-4 font-medium text-slate-200">${formatNumber(s.first9)}</td>
-          </tr>
-        `;
-      }).join('');
+      if (!tbody) return;
+      tbody.innerHTML = appData.stats.map((s, idx) => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="px-6 py-4 text-center text-slate-500 font-bold">${idx + 1}</td>
+          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${s.player}')">${s.player || '-'}</td>
+          <td class="px-6 py-4 text-slate-300">${s.games || 0}</td>
+          <td class="px-6 py-4 text-slate-300">${s.legs || 0}</td>
+          <td class="px-6 py-4 text-emerald-400 font-extrabold">${formatNumber(s.avg)}</td>
+          <td class="px-6 py-4 text-slate-200">${formatNumber(s.first9)}</td>
+        </tr>
+      `).join('');
     }
 
     function renderRecords() {
       const tbody = document.getElementById('recordsTable');
-      const sortSelect = document.getElementById('recordsSortSelect');
-      const sortValue = sortSelect ? sortSelect.value : '180-desc';
-
-      if (!appData.records || !appData.records.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-500 font-medium">Keine Bestleistungen vorhanden.</td></tr>`;
-        return;
-      }
-
-      const parseVal = (val) => {
-        if (val === undefined || val === null || val === '-' || val === '') return 0;
-        return parseInt(val, 10) || 0;
-      };
-
-      const countShortgames = (sg) => {
-        if (!sg || sg === '-') return 0;
-        if (Array.isArray(sg)) return sg.length;
-        if (typeof sg === 'number') return 1;
-        if (typeof sg === 'string') {
-          const trimmed = sg.trim();
-          if (!trimmed) return 0;
-          return trimmed.split(',').filter(item => item.trim() !== '').length;
-        }
-        return 0;
-      };
-
-      let sortedRecords = [...appData.records];
-
-      sortedRecords.sort((a, b) => {
-        switch (sortValue) {
-          case '180-desc': return parseVal(b.r180) - parseVal(a.r180);
-          case '140-desc': return parseVal(b.r140) - parseVal(a.r140);
-          case 'shortgame-desc': return countShortgames(b.shortgame) - countShortgames(a.shortgame);
-          default: return 0;
-        }
-      });
-
-      tbody.innerHTML = sortedRecords.map((r, idx) => {
-        let badge = `<span class="text-xs font-bold text-slate-500">${idx + 1}</span>`;
-        if (idx === 0) badge = `<i class="fa-solid fa-crown text-amber-400 text-sm"></i>`;
-        else if (idx === 1) badge = `<i class="fa-solid fa-medal text-slate-300 text-sm"></i>`;
-        else if (idx === 2) badge = `<i class="fa-solid fa-award text-amber-600 text-sm"></i>`;
-
-        return `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="px-6 py-4 text-center">${badge}</td>
-            <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer transition" onclick="openPlayerModal('${r.player}')">
-              ${r.player || '-'}
-            </td>
-            <td class="px-6 py-4 text-amber-400 font-bold">${r.r180 || 0}</td>
-            <td class="px-6 py-4 text-slate-300 font-semibold">${r.r140 || 0}</td>
-            <td class="px-6 py-4 text-cyan-300 font-semibold">${r.shortgame || '-'}</td>
-            <td class="px-6 py-4 text-emerald-400 font-semibold">${r.highfinish || '-'}</td>
-          </tr>
-        `;
-      }).join('');
+      if (!tbody) return;
+      tbody.innerHTML = appData.records.map((r, idx) => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="px-6 py-4 text-center text-slate-500 font-bold">${idx + 1}</td>
+          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${r.player}')">${r.player || '-'}</td>
+          <td class="px-6 py-4 text-amber-400 font-bold">${r.r180 || 0}</td>
+          <td class="px-6 py-4 text-slate-300 font-semibold">${r.r140 || 0}</td>
+          <td class="px-6 py-4 text-cyan-300 font-semibold">${r.shortgame || '-'}</td>
+          <td class="px-6 py-4 text-emerald-400 font-semibold">${r.highfinish || '-'}</td>
+        </tr>
+      `).join('');
     }
 
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
-      if (!modal) return;
-
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
       const playerStats = appData.stats.find(s => s.player === playerName) || {};
       const playerRecords = appData.records.find(r => r.player === playerName) || {};
@@ -792,8 +555,7 @@
     }
 
     function closePlayerModal() {
-      const modal = document.getElementById('playerModal');
-      if (modal) modal.classList.add('hidden');
+      document.getElementById('playerModal').classList.add('hidden');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
