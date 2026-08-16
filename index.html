@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SVG-Darts Liga & Statistiken</title>
+  <title>SVG-Darts Liga &amp; Statistiken</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -197,7 +197,7 @@
     <section id="content-stats" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-2xl font-bold font-display text-white">Averages & Leistung</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Averages &amp; Leistung</h2>
         </div>
         
         <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
@@ -348,6 +348,12 @@
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
       return isNaN(num) ? val : num.toFixed(2);
+    }
+
+    function parseNumeric(val) {
+      if (val === undefined || val === null || val === '-' || val === '') return 0;
+      const num = parseFloat(String(val).replace(',', '.'));
+      return isNaN(num) ? 0 : num;
     }
 
     function formatDate(dateVal) {
@@ -509,7 +515,19 @@
     function renderStats() {
       const tbody = document.getElementById('statsTable');
       if (!tbody) return;
-      tbody.innerHTML = appData.stats.map((s, idx) => `
+
+      const sortVal = document.getElementById('statsSortSelect')?.value || 'avg-desc';
+      let sortedStats = [...appData.stats];
+
+      sortedStats.sort((a, b) => {
+        if (sortVal === 'avg-desc') return parseNumeric(b.avg) - parseNumeric(a.avg);
+        if (sortVal === 'avg-asc') return parseNumeric(a.avg) - parseNumeric(b.avg);
+        if (sortVal === 'first9-desc') return parseNumeric(b.first9) - parseNumeric(a.first9);
+        if (sortVal === 'games-desc') return parseNumeric(b.games) - parseNumeric(a.games);
+        return 0;
+      });
+
+      tbody.innerHTML = sortedStats.map((s, idx) => `
         <tr class="hover:bg-slate-800/40 transition">
           <td class="px-6 py-4 text-center text-slate-500 font-bold">${idx + 1}</td>
           <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${s.player}')">${s.player || '-'}</td>
@@ -524,7 +542,22 @@
     function renderRecords() {
       const tbody = document.getElementById('recordsTable');
       if (!tbody) return;
-      tbody.innerHTML = appData.records.map((r, idx) => `
+
+      const sortVal = document.getElementById('recordsSortSelect')?.value || '180-desc';
+      let sortedRecords = [...appData.records];
+
+      sortedRecords.sort((a, b) => {
+        if (sortVal === '180-desc') return parseNumeric(b.r180) - parseNumeric(a.r180);
+        if (sortVal === '140-desc') return parseNumeric(b.r140) - parseNumeric(a.r140);
+        if (sortVal === 'shortgame-desc') {
+          const countA = (a.shortgame && a.shortgame !== '-') ? String(a.shortgame).split(',').length : 0;
+          const countB = (b.shortgame && b.shortgame !== '-') ? String(b.shortgame).split(',').length : 0;
+          return countB - countA;
+        }
+        return 0;
+      });
+
+      tbody.innerHTML = sortedRecords.map((r, idx) => `
         <tr class="hover:bg-slate-800/40 transition">
           <td class="px-6 py-4 text-center text-slate-500 font-bold">${idx + 1}</td>
           <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${r.player}')">${r.player || '-'}</td>
