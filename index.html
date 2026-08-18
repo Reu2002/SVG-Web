@@ -5,60 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SVG-Darts Liga &amp; Statistiken</title>
   
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Google Fonts -->
+  <!-- Preconnect für schnelle Verbindungen -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Montserrat', 'sans-serif'],
-          },
-          colors: {
-            darts: {
-              base: '#0B0F17',
-              card: '#131B2A',
-              border: '#1E293B',
-              accent: '#10B981',
-              accentHover: '#059669',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
+  <!-- Kompiliertes Tailwind CSS (Kein JS Play-CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  
+  <!-- Google Fonts non-blocking -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
+  
+  <!-- FontAwesome Icons non-blocking -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  
   <style>
     body {
-      background-color: #0B0F17;
+      background-color: #000000;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.03) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.02) 0px, transparent 50%);
       background-attachment: fixed;
-      color: #F8FAFC;
+      color: #F3F4F6;
+      font-family: 'Inter', sans-serif;
     }
     
+    .font-display {
+      font-family: 'Montserrat', sans-serif;
+    }
+
     ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #0B0F17; }
-    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    ::-webkit-scrollbar-track { background: #000000; }
+    ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #404040; }
 
     .glass-card {
-      background: rgba(19, 27, 42, 0.75);
+      background: rgba(18, 18, 18, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .tab-btn {
@@ -66,53 +51,64 @@
     }
     
     .tab-btn.active {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%);
-      color: #10B981;
-      border-color: rgba(16, 185, 129, 0.4);
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+      background: #FFFFFF;
+      color: #000000;
+      border-color: #FFFFFF;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     }
+
+    /* Styling für Filter und Dropdown-Menüs (Schwarzer Hintergrund, weiße Schrift) */
+    select, select option {
+      background-color: #000000 !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Custom utility fallback */
+    .bg-darts-base { background-color: #000000; }
+    .bg-darts-card { background-color: #121212; }
+    .border-darts-border { border-color: #262626; }
+    .text-darts-accent { color: #FFFFFF; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans antialiased text-slate-200">
+<body class="min-h-screen flex flex-col antialiased text-neutral-200">
 
   <!-- Navigation Header -->
-  <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80">
+  <header class="sticky top-0 z-50 glass-card border-b border-neutral-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-emerald-500/20 flex items-center justify-center bg-slate-800">
-            <!-- Postimages Direktlink -->
+          <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-neutral-700 flex items-center justify-center bg-neutral-900">
             <img src="https://i.postimg.cc/JnWfvy70/SVG.jpg" alt="SVG Darts Logo" class="w-full h-full object-cover">
           </div>
           <div>
             <span class="text-2xl font-black font-display tracking-tight text-white block leading-none">
-              SVG<span class="text-emerald-400">DARTS</span>
+              SVG<span class="text-neutral-400">DARTS</span>
             </span>
-            <span class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold block mt-1">
+            <span class="text-xs uppercase tracking-widest text-neutral-400 font-semibold block mt-1">
               Liga &amp; Statistik Portal
             </span>
           </div>
         </div>
 
-        <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 rounded-xl flex items-center gap-2.5 border border-slate-700/60 transition shadow-sm text-sm font-medium">
-          <i class="fa-solid fa-rotate text-emerald-400" id="refreshIcon"></i>
+        <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium">
+          <i class="fa-solid fa-rotate text-white" id="refreshIcon"></i>
           <span>Aktualisieren</span>
         </button>
       </div>
 
       <!-- Tabs Navigation -->
-      <nav class="flex space-x-2 overflow-x-auto pb-3 pt-1 text-sm no-scrollbar border-t border-slate-800/40">
-        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap">
+      <nav class="flex space-x-2 overflow-x-auto pb-3 pt-1 text-sm border-t border-neutral-800/60">
+        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
         </button>
-        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap">
+        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
         </button>
-        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap">
+        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-chart-line text-xs"></i> Averages
         </button>
-        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap">
+        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
         </button>
       </nav>
@@ -122,12 +118,12 @@
   <!-- Main Content Area -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
     
-    <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all">
+    <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all bg-black border border-neutral-800">
       <div class="flex items-center gap-3">
-        <i id="statusIcon" class="fa-solid fa-circle-info text-lg"></i>
-        <span id="statusMessage" class="font-medium"></span>
+        <i id="statusIcon" class="fa-solid fa-circle-info text-lg text-white"></i>
+        <span id="statusMessage" class="font-medium text-neutral-200"></span>
       </div>
-      <button onclick="document.getElementById('statusBanner').classList.add('hidden')" class="text-slate-400 hover:text-white p-1">
+      <button onclick="document.getElementById('statusBanner').classList.add('hidden')" class="text-neutral-400 hover:text-white p-1">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
@@ -137,37 +133,37 @@
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
         
-        <div class="flex flex-wrap items-center gap-2.5 glass-card p-2 rounded-2xl">
-          <div class="flex items-center gap-1.5 text-slate-400 text-xs px-2 font-semibold uppercase tracking-wider">
-            <i class="fa-solid fa-filter text-emerald-400"></i> Filter:
+        <div class="flex flex-wrap items-center gap-2 glass-card p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Filter:
           </div>
           
-          <select id="filterMatchday" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <select id="filterMatchday" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Spieltag</option>
           </select>
 
-          <select id="filterTeam" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <select id="filterTeam" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Teams</option>
           </select>
 
-          <select id="filterDate" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <select id="filterDate" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Datum</option>
           </select>
 
-          <select id="filterLocation" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+          <select id="filterLocation" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Spielort</option>
           </select>
 
-          <button onclick="resetMatchFilters()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/80 transition flex items-center gap-1.5">
-            <i class="fa-solid fa-rotate-left text-emerald-400"></i> Reset
+          <button onclick="resetMatchFilters()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left text-white"></i> Reset
           </button>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-300">
-            <thead class="bg-slate-800/50 text-slate-400 uppercase text-[11px] font-bold tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
                 <th class="px-6 py-4">Spieltag</th>
                 <th class="px-6 py-4">Datum</th>
@@ -178,7 +174,7 @@
                 <th class="px-6 py-4 text-center">Ergebnis</th>
               </tr>
             </thead>
-            <tbody id="matchesTable" class="divide-y divide-slate-800/50"></tbody>
+            <tbody id="matchesTable" class="divide-y divide-neutral-800/60"></tbody>
           </table>
         </div>
       </div>
@@ -189,15 +185,15 @@
       <h2 class="text-2xl font-bold text-white">Spielerdatenbank</h2>
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-300">
-            <thead class="bg-slate-800/50 text-slate-400 uppercase text-xs">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs">
               <tr>
                 <th class="px-6 py-3">ID</th>
                 <th class="px-6 py-3">Name</th>
                 <th class="px-6 py-3">Team</th>
               </tr>
             </thead>
-            <tbody id="playersTable" class="divide-y divide-slate-800"></tbody>
+            <tbody id="playersTable" class="divide-y divide-neutral-800/60"></tbody>
           </table>
         </div>
       </div>
@@ -211,10 +207,10 @@
         </div>
         
         <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
-          <label for="statsSortSelect" class="text-xs text-slate-400 pl-2 font-medium flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-down-wide-short text-emerald-400"></i> Sortieren:
+          <label for="statsSortSelect" class="text-xs text-neutral-400 pl-2 font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-down-wide-short text-white"></i> Sortieren:
           </label>
-          <select id="statsSortSelect" onchange="renderStats()" class="bg-slate-800/90 text-slate-200 text-xs rounded-lg px-3 py-1.5 border border-slate-700/80 focus:outline-none cursor-pointer">
+          <select id="statsSortSelect" onchange="renderStats()" class="bg-black text-white text-xs rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="avg-desc">Höchster Saisonaverage</option>
             <option value="avg-asc">Niedrigster Saisonaverage</option>
             <option value="first9-desc">Höchster Saison-First 9</option>
@@ -225,8 +221,8 @@
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-300">
-            <thead class="bg-slate-800/50 text-slate-400 uppercase text-[11px] font-bold tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
                 <th class="px-6 py-4 w-12 text-center">#</th>
                 <th class="px-6 py-4">Spieler</th>
@@ -236,7 +232,7 @@
                 <th class="px-6 py-4">Saison-First 9</th>
               </tr>
             </thead>
-            <tbody id="statsTable" class="divide-y divide-slate-800/50"></tbody>
+            <tbody id="statsTable" class="divide-y divide-neutral-800/60"></tbody>
           </table>
         </div>
       </div>
@@ -248,10 +244,10 @@
         <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
         
         <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
-          <label for="recordsSortSelect" class="text-xs text-slate-400 pl-2 font-medium flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-down-wide-short text-emerald-400"></i> Sortieren:
+          <label for="recordsSortSelect" class="text-xs text-neutral-400 pl-2 font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-down-wide-short text-white"></i> Sortieren:
           </label>
-          <select id="recordsSortSelect" onchange="renderRecords()" class="bg-slate-800/90 text-slate-200 text-xs rounded-lg px-3 py-1.5 border border-slate-700/80 focus:outline-none cursor-pointer">
+          <select id="recordsSortSelect" onchange="renderRecords()" class="bg-black text-white text-xs rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="180-desc">Meiste 180er</option>
             <option value="140-desc">Meiste 140+</option>
             <option value="shortgame-desc">Meiste Shortgames</option>
@@ -261,8 +257,8 @@
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-300">
-            <thead class="bg-slate-800/50 text-slate-400 uppercase text-[11px] font-bold tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
                 <th class="px-6 py-4 w-12 text-center">#</th>
                 <th class="px-6 py-4">Spieler</th>
@@ -272,7 +268,7 @@
                 <th class="px-6 py-4">Highfinishes</th>
               </tr>
             </thead>
-            <tbody id="recordsTable" class="divide-y divide-slate-800/50"></tbody>
+            <tbody id="recordsTable" class="divide-y divide-neutral-800/60"></tbody>
           </table>
         </div>
       </div>
@@ -281,67 +277,67 @@
   </main>
 
   <!-- Player Profile Modal -->
-  <div id="playerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-card bg-slate-900/95 border border-slate-700/60 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
-      <div class="bg-gradient-to-r from-emerald-950/60 via-slate-900 to-slate-900 p-6 border-b border-slate-800 flex justify-between items-start">
+  <div id="playerModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-black border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="bg-neutral-950 p-6 border-b border-neutral-800 flex justify-between items-start">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400 font-bold text-xl">
+          <div class="w-12 h-12 rounded-2xl bg-black border border-neutral-700 flex items-center justify-center text-white font-bold text-xl">
             <i class="fa-solid fa-user"></i>
           </div>
           <div>
             <h3 id="modalPlayerName" class="text-xl font-bold font-display text-white"></h3>
-            <p id="modalPlayerTeam" class="text-xs font-semibold text-emerald-400 mt-0.5 uppercase tracking-wider"></p>
+            <p id="modalPlayerTeam" class="text-xs font-semibold text-neutral-400 mt-0.5 uppercase tracking-wider"></p>
           </div>
         </div>
-        <button onclick="closePlayerModal()" class="text-slate-400 hover:text-white p-2">
+        <button onclick="closePlayerModal()" class="text-neutral-400 hover:text-white p-2">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
       <div class="p-6 space-y-5">
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-2xl text-center">
-            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Saison-Average</div>
-            <div id="modal3DartAvg" class="text-3xl font-black font-display text-emerald-400">-</div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average</div>
+            <div id="modal3DartAvg" class="text-3xl font-black font-display text-white">-</div>
           </div>
-          <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-2xl text-center">
-            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Saison First 9</div>
-            <div id="modalFirst9Avg" class="text-3xl font-black font-display text-slate-200">-</div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison First 9</div>
+            <div id="modalFirst9Avg" class="text-3xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl flex items-center justify-between">
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <i class="fa-solid fa-star text-amber-400"></i>
-              <span class="text-xs font-medium text-slate-300">180er</span>
+              <i class="fa-solid fa-star text-white"></i>
+              <span class="text-xs font-medium text-neutral-300">180er</span>
             </div>
-            <span id="modal180s" class="font-extrabold text-amber-400 text-base">0</span>
+            <span id="modal180s" class="font-extrabold text-white text-base">0</span>
           </div>
-          <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl flex items-center justify-between">
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-              <i class="fa-solid fa-fire text-orange-400"></i>
-              <span class="text-xs font-medium text-slate-300">140+</span>
+              <i class="fa-solid fa-fire text-neutral-400"></i>
+              <span class="text-xs font-medium text-neutral-300">140+</span>
             </div>
-            <span id="modal140s" class="font-extrabold text-slate-200 text-base">0</span>
+            <span id="modal140s" class="font-extrabold text-neutral-200 text-base">0</span>
           </div>
         </div>
 
         <div class="space-y-2.5">
-          <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
-            <span id="modalHighfinish" class="text-xs font-semibold text-emerald-400 block break-words">Keine vorhanden</span>
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
+            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
+            <span id="modalHighfinish" class="text-xs font-semibold text-white block break-words">Keine vorhanden</span>
           </div>
 
-          <div class="bg-slate-800/30 border border-slate-800/60 p-3.5 rounded-xl">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
-            <span id="modalShortgames" class="text-xs font-semibold text-cyan-300 block break-words">Keine vorhanden</span>
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
+            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
+            <span id="modalShortgames" class="text-xs font-semibold text-neutral-300 block break-words">Keine vorhanden</span>
           </div>
         </div>
       </div>
 
-      <div class="bg-slate-900/80 px-6 py-4 border-t border-slate-800/80 text-right">
-        <button onclick="closePlayerModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">
+      <div class="bg-black px-6 py-4 border-t border-neutral-800 text-right">
+        <button onclick="closePlayerModal()" class="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 text-xs font-semibold rounded-xl transition">
           Schließen
         </button>
       </div>
@@ -399,17 +395,6 @@
       const icon = document.getElementById('refreshIcon');
       if (icon) icon.classList.add('fa-spin');
 
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached && !isManualRefresh) {
-        try {
-          appData = JSON.parse(cached);
-          populateMatchFilters();
-          renderAllTables();
-        } catch (e) {
-          console.error("Cache Read Error", e);
-        }
-      }
-
       try {
         const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
         if (!response.ok) throw new Error("Netzwerkfehler");
@@ -427,7 +412,7 @@
         populateMatchFilters();
         renderAllTables();
       } catch (err) {
-        console.warn("Backend nicht erreichbar, benutze Offline-Cache:", err);
+        console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
       } finally {
         if (icon) icon.classList.remove('fa-spin');
       }
@@ -442,7 +427,6 @@
 
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
       
-      // Sammelt alle Heim- und Auswärtsteams, die "SVG" im Namen enthalten
       const svgTeams = [...new Set(
         appData.matches.flatMap(m => [m.home, m.away])
           .filter(t => t && /SVG[\w\d]*/i.test(t))
@@ -493,7 +477,7 @@
       });
 
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Keine Spiele gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele gefunden.</td></tr>`;
         return;
       }
 
@@ -502,15 +486,15 @@
         const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
         
         const scoreStyleClass = isZeroZero
-          ? 'bg-amber-950/70 border-amber-600/80 text-amber-400'
-          : 'bg-emerald-950/60 border-emerald-800/80 text-emerald-400';
+          ? 'bg-black border-neutral-700 text-neutral-400'
+          : 'bg-white border-white text-black font-black';
 
         return `
-        <tr class="hover:bg-slate-800/40 transition">
+        <tr class="hover:bg-neutral-900/60 transition">
           <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
-          <td class="px-6 py-4 text-slate-300">${formatDate(m.date)}</td>
-          <td class="px-6 py-4 text-slate-400">${formatTime(m.time || m.uhrzeit)}</td>
-          <td class="px-6 py-4 text-slate-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${formatDate(m.date)}</td>
+          <td class="px-6 py-4 text-neutral-400">${formatTime(m.time || m.uhrzeit)}</td>
+          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
           <td class="px-6 py-4 text-white font-medium">${m.home || '-'}</td>
           <td class="px-6 py-4 text-white font-medium">${m.away || '-'}</td>
           <td class="px-6 py-4 text-center">
@@ -526,10 +510,10 @@
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
       tbody.innerHTML = appData.players.map(p => `
-        <tr class="hover:bg-slate-800/40 transition">
-          <td class="px-6 py-4 text-xs text-slate-500">${p.id || '-'}</td>
-          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
-          <td class="px-6 py-4 text-slate-300">${p.team || '-'}</td>
+        <tr class="hover:bg-neutral-900/60 transition">
+          <td class="px-6 py-4 text-xs text-neutral-500">${p.id || '-'}</td>
+          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
         </tr>
       `).join('');
     }
@@ -565,13 +549,13 @@
         }
 
         return `
-        <tr class="hover:bg-slate-800/40 transition">
-          <td class="px-6 py-4 text-center text-slate-500 font-bold">${currentRank}</td>
-          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${s.player}')">${s.player || '-'}</td>
-          <td class="px-6 py-4 text-slate-300">${s.games || 0}</td>
-          <td class="px-6 py-4 text-slate-300">${s.legs || 0}</td>
-          <td class="px-6 py-4 text-emerald-400 font-extrabold">${formatNumber(s.avg)}</td>
-          <td class="px-6 py-4 text-slate-200">${formatNumber(s.first9)}</td>
+        <tr class="hover:bg-neutral-900/60 transition">
+          <td class="px-6 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${s.player}')">${s.player || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${s.games || 0}</td>
+          <td class="px-6 py-4 text-neutral-300">${s.legs || 0}</td>
+          <td class="px-6 py-4 text-white font-extrabold">${formatNumber(s.avg)}</td>
+          <td class="px-6 py-4 text-neutral-200">${formatNumber(s.first9)}</td>
         </tr>
       `;
       }).join('');
@@ -608,13 +592,13 @@
         }
 
         return `
-        <tr class="hover:bg-slate-800/40 transition">
-          <td class="px-6 py-4 text-center text-slate-500 font-bold">${currentRank}</td>
-          <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${r.player}')">${r.player || '-'}</td>
-          <td class="px-6 py-4 text-amber-400 font-bold">${r.r180 || 0}</td>
-          <td class="px-6 py-4 text-slate-300 font-semibold">${r.r140 || 0}</td>
-          <td class="px-6 py-4 text-cyan-300 font-semibold">${r.shortgame || '-'}</td>
-          <td class="px-6 py-4 text-emerald-400 font-semibold">${r.highfinish || '-'}</td>
+        <tr class="hover:bg-neutral-900/60 transition">
+          <td class="px-6 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${r.player}')">${r.player || '-'}</td>
+          <td class="px-6 py-4 text-white font-bold">${r.r180 || 0}</td>
+          <td class="px-6 py-4 text-neutral-300 font-semibold">${r.r140 || 0}</td>
+          <td class="px-6 py-4 text-neutral-300 font-semibold">${r.shortgame || '-'}</td>
+          <td class="px-6 py-4 text-white font-semibold">${r.highfinish || '-'}</td>
         </tr>
       `;
       }).join('');
@@ -642,7 +626,20 @@
       document.getElementById('playerModal').classList.add('hidden');
     }
 
+    // Sofortiges Rendering beim Seitenaufruf (0ms Verzögerung) + Nachladen im Hintergrund
     window.addEventListener('DOMContentLoaded', () => {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          appData = JSON.parse(cached);
+          populateMatchFilters();
+          renderAllTables();
+        } catch (e) {
+          console.error("Cache Read Error", e);
+        }
+      }
+      
+      // Hintergrund-Sync mit Google Sheets ausführen
       loadDataFromSheets();
     });
   </script>
