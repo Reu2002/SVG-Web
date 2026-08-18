@@ -182,7 +182,29 @@
 
     <!-- Reiter 2: Spielerdatenbank -->
     <section id="content-players" class="space-y-6 hidden">
-      <h2 class="text-2xl font-bold text-white">Spielerdatenbank</h2>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 class="text-2xl font-bold font-display text-white">Spielerdatenbank</h2>
+        
+        <div class="flex items-center gap-2 glass-card p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Filter:
+          </div>
+          <select id="playerTeamFilter" onchange="renderPlayers()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+            <option value="">Alle Teams</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+      </div>
+
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-neutral-300">
@@ -506,10 +528,48 @@
       `}).join('');
     }
 
+    function parsePlayerTeamTokens(teamStr) {
+      if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
+      const parts = String(teamStr).split('/');
+      let letter = null;
+      let numbers = [];
+
+      for (const part of parts) {
+        const cleaned = part.trim();
+        if (!letter && /^[A-G]$/i.test(cleaned)) {
+          letter = cleaned.toUpperCase();
+        }
+        if (/^\d+$/.test(cleaned)) {
+          numbers.push(cleaned);
+        }
+      }
+      return { letter, numbers };
+    }
+
     function renderPlayers() {
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
-      tbody.innerHTML = appData.players.map(p => `
+
+      const selectedFilter = document.getElementById('playerTeamFilter')?.value || '';
+
+      const filteredPlayers = appData.players.filter(p => {
+        if (!selectedFilter) return true;
+        
+        const { letter, numbers } = parsePlayerTeamTokens(p.team);
+        if (/^[A-G]$/i.test(selectedFilter)) {
+          return letter === selectedFilter.toUpperCase();
+        } else if (/^\d+$/.test(selectedFilter)) {
+          return numbers.includes(selectedFilter);
+        }
+        return true;
+      });
+
+      if (!filteredPlayers.length) {
+        tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-neutral-500">Keine Spieler gefunden.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredPlayers.map(p => `
         <tr class="hover:bg-neutral-900/60 transition">
           <td class="px-6 py-4 text-xs text-neutral-500">${p.id || '-'}</td>
           <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
