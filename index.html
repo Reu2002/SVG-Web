@@ -68,6 +68,16 @@
     .bg-darts-card { background-color: #121212; }
     .border-darts-border { border-color: #262626; }
     .text-darts-accent { color: #FFFFFF; }
+
+    .sortable-header {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.15s ease;
+    }
+    .sortable-header:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
@@ -226,18 +236,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Averages &amp; Leistung</h2>
-        </div>
-        
-        <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
-          <label for="statsSortSelect" class="text-xs text-neutral-400 pl-2 font-medium flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-down-wide-short text-white"></i> Sortieren:
-          </label>
-          <select id="statsSortSelect" onchange="renderStats()" class="bg-black text-white text-xs rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none cursor-pointer">
-            <option value="avg-desc">Höchster Saisonaverage</option>
-            <option value="avg-asc">Niedrigster Saisonaverage</option>
-            <option value="first9-desc">Höchster Saison-First 9</option>
-            <option value="games-desc">Meiste Spiele</option>
-          </select>
+          <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
       </div>
 
@@ -246,12 +245,34 @@
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-6 py-4 w-12 text-center">#</th>
-                <th class="px-6 py-4">Spieler</th>
-                <th class="px-6 py-4">Spiele</th>
-                <th class="px-6 py-4">Legs</th>
-                <th class="px-6 py-4">Saison-Average</th>
-                <th class="px-6 py-4">Saison-First 9</th>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header">
+                  Spieler <span id="sort-icon-player" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
+                  Saison-Average (Einzel) <span id="sort-icon-avgSingle" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('avgDouble')" class="px-4 py-4 sortable-header">
+                  Saison-Average (Doppel) <span id="sort-icon-avgDouble" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('first9Single')" class="px-4 py-4 sortable-header">
+                  First-9-Saison-Average (Einzel) <span id="sort-icon-first9Single" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('first9Double')" class="px-4 py-4 sortable-header">
+                  First-9-Saison-Average (Doppel) <span id="sort-icon-first9Double" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('maxAvgSingle')" class="px-4 py-4 sortable-header">
+                  Höchster Average (Einzel) <span id="sort-icon-maxAvgSingle" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('maxAvgDouble')" class="px-4 py-4 sortable-header">
+                  Höchster Average (Doppel) <span id="sort-icon-maxAvgDouble" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('maxFirst9Single')" class="px-4 py-4 sortable-header">
+                  Höchster First 9 (Einzel) <span id="sort-icon-maxFirst9Single" class="ml-1"></span>
+                </th>
+                <th onclick="setStatsSort('maxFirst9Double')" class="px-4 py-4 sortable-header">
+                  Höchster First 9 (Doppel) <span id="sort-icon-maxFirst9Double" class="ml-1"></span>
+                </th>
               </tr>
             </thead>
             <tbody id="statsTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -319,11 +340,11 @@
       <div class="p-6 space-y-5">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average (Einzel)</div>
             <div id="modal3DartAvg" class="text-3xl font-black font-display text-white">-</div>
           </div>
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison First 9</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First 9 (Einzel)</div>
             <div id="modalFirst9Avg" class="text-3xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
@@ -367,10 +388,14 @@
   </div>
 
   <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxRXqyKR_bVMRW5vs4AKkah07cobEFhouGdeflFjl3CtA4SVV30_wqk3q2qjz6YFMdP/exec";
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwyOc9ihu-3_cCzVnFi2TyXi7XF7VE1Ib2WW7BitfZ3p1GtgMvXxVkPuFqbD_AjveuU/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
 
     let appData = { matches: [], players: [], stats: [], records: [] };
+
+    // Statische Sortier-Variablen für den Averages-Reiter
+    let currentStatsSortKey = 'avgSingle';
+    let currentStatsSortAsc = false;
 
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
@@ -578,44 +603,91 @@
       `).join('');
     }
 
+    function setStatsSort(key) {
+      if (currentStatsSortKey === key) {
+        currentStatsSortAsc = !currentStatsSortAsc;
+      } else {
+        currentStatsSortKey = key;
+        currentStatsSortAsc = key === 'player'; // Alphabetisch standardmäßig aufsteigend, Zahlen absteigend
+      }
+      renderStats();
+    }
+
+    function updateStatsSortIcons() {
+      const keys = ['player', 'avgSingle', 'avgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
+      keys.forEach(k => {
+        const iconEl = document.getElementById(`sort-icon-${k}`);
+        if (!iconEl) return;
+        if (k === currentStatsSortKey) {
+          iconEl.innerHTML = currentStatsSortAsc 
+            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
+            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+        } else {
+          iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
+        }
+      });
+    }
+
     function renderStats() {
       const tbody = document.getElementById('statsTable');
       if (!tbody) return;
 
-      const sortVal = document.getElementById('statsSortSelect')?.value || 'avg-desc';
+      updateStatsSortIcons();
       let sortedStats = [...appData.stats];
 
-      const getSortValue = (item) => {
-        if (sortVal === 'avg-desc' || sortVal === 'avg-asc') return parseNumeric(item.avg);
-        if (sortVal === 'first9-desc') return parseNumeric(item.first9);
-        if (sortVal === 'games-desc') return parseNumeric(item.games);
+      const getVal = (item, key) => {
+        // Fallback-Mapping für unterschiedliche JSON-Schlüsselbezeichnungen aus Google Sheets
+        if (key === 'player') return item.player || item.name || '';
+        if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
+        if (key === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (key === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
+        if (key === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
+        if (key === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single);
+        if (key === 'maxAvgDouble') return parseNumeric(item.maxAvgDouble ?? item.max_avg_double);
+        if (key === 'maxFirst9Single') return parseNumeric(item.maxFirst9Single ?? item.max_first9_single);
+        if (key === 'maxFirst9Double') return parseNumeric(item.maxFirst9Double ?? item.max_first9_double);
         return 0;
       };
 
       sortedStats.sort((a, b) => {
-        const valA = getSortValue(a);
-        const valB = getSortValue(b);
-        return sortVal === 'avg-asc' ? valA - valB : valB - valA;
+        const valA = getVal(a, currentStatsSortKey);
+        const valB = getVal(b, currentStatsSortKey);
+
+        if (typeof valA === 'string') {
+          return currentStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return currentStatsSortAsc ? valA - valB : valB - valA;
       });
+
+      if (!sortedStats.length) {
+        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Statistiken gefunden.</td></tr>`;
+        return;
+      }
 
       let currentRank = 0;
       let previousVal = null;
 
       tbody.innerHTML = sortedStats.map((s, idx) => {
-        const val = getSortValue(s);
+        const val = getVal(s, currentStatsSortKey);
         if (val !== previousVal) {
           currentRank = idx + 1;
           previousVal = val;
         }
 
+        const playerName = s.player || s.name || '-';
+
         return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-6 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${s.player}')">${s.player || '-'}</td>
-          <td class="px-6 py-4 text-neutral-300">${s.games || 0}</td>
-          <td class="px-6 py-4 text-neutral-300">${s.legs || 0}</td>
-          <td class="px-6 py-4 text-white font-extrabold">${formatNumber(s.avg)}</td>
-          <td class="px-6 py-4 text-neutral-200">${formatNumber(s.first9)}</td>
+          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+          <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
         </tr>
       `;
       }).join('');
@@ -667,13 +739,13 @@
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
-      const playerStats = appData.stats.find(s => s.player === playerName) || {};
+      const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
       const playerRecords = appData.records.find(r => r.player === playerName) || {};
 
       document.getElementById('modalPlayerName').innerText = playerName || 'Unbekannt';
       document.getElementById('modalPlayerTeam').innerText = playerInfo.team || 'Kein Team';
-      document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avg);
-      document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9);
+      document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avgSingle ?? playerStats.avg_single ?? playerStats.avg);
+      document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
       document.getElementById('modal180s').innerText = playerRecords.r180 || 0;
       document.getElementById('modal140s').innerText = playerRecords.r140 || 0;
       document.getElementById('modalHighfinish').innerText = playerRecords.highfinish || 'Keine vorhanden';
