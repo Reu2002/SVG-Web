@@ -8,7 +8,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts (Aktualisierte Version) -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -144,6 +144,10 @@
           
           <select id="filterMatchday" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
             <option value="">Spieltag</option>
+          </select>
+
+          <select id="filterTeam" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
+            <option value="">Teams</option>
           </select>
 
           <select id="filterDate" onchange="renderMatches()" class="bg-slate-800/90 text-slate-200 text-xs rounded-xl px-3 py-2 border border-slate-700/80 focus:outline-none focus:border-emerald-500 cursor-pointer">
@@ -431,20 +435,30 @@
 
     function populateMatchFilters() {
       const matchdaySelect = document.getElementById('filterMatchday');
+      const teamSelect = document.getElementById('filterTeam');
       const dateSelect = document.getElementById('filterDate');
       const locationSelect = document.getElementById('filterLocation');
-      if (!matchdaySelect || !dateSelect || !locationSelect) return;
+      if (!matchdaySelect || !teamSelect || !dateSelect || !locationSelect) return;
 
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
+      
+      // Sammelt alle Heim- und Auswärtsteams, die "SVG" im Namen enthalten
+      const svgTeams = [...new Set(
+        appData.matches.flatMap(m => [m.home, m.away])
+          .filter(t => t && /SVG[\w\d]*/i.test(t))
+      )].sort();
+
       const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))];
 
       matchdaySelect.innerHTML = '<option value="">Spieltage</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
+      teamSelect.innerHTML = '<option value="">Teams</option>' + svgTeams.map(t => `<option value="${t}">${t}</option>`).join('');
       dateSelect.innerHTML = '<option value="">Datum</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
       locationSelect.innerHTML = '<option value="">Spielort</option><option value="Göttingen">Göttingen</option><option value="Auswärts">Auswärts</option>';
     }
 
     function resetMatchFilters() {
       document.getElementById('filterMatchday').value = "";
+      document.getElementById('filterTeam').value = "";
       document.getElementById('filterDate').value = "";
       document.getElementById('filterLocation').value = "";
       renderMatches();
@@ -462,18 +476,20 @@
       if (!tbody) return;
 
       const selMatchday = document.getElementById('filterMatchday')?.value;
+      const selTeam = document.getElementById('filterTeam')?.value;
       const selDate = document.getElementById('filterDate')?.value;
       const selLocation = document.getElementById('filterLocation')?.value;
 
       const filtered = appData.matches.filter(m => {
         const matchdayMatches = !selMatchday || String(m.matchday) === selMatchday;
+        const teamMatches = !selTeam || m.home === selTeam || m.away === selTeam;
         const dateMatches = !selDate || formatDate(m.date) === selDate;
         let locationMatches = true;
         if (selLocation) {
           const loc = String(m.location || '').toLowerCase();
           locationMatches = selLocation === 'Göttingen' ? loc.includes('göttingen') : !loc.includes('göttingen');
         }
-        return matchdayMatches && dateMatches && locationMatches;
+        return matchdayMatches && teamMatches && dateMatches && locationMatches;
       });
 
       if (!filtered.length) {
