@@ -541,24 +541,40 @@
       const sortVal = document.getElementById('statsSortSelect')?.value || 'avg-desc';
       let sortedStats = [...appData.stats];
 
-      sortedStats.sort((a, b) => {
-        if (sortVal === 'avg-desc') return parseNumeric(b.avg) - parseNumeric(a.avg);
-        if (sortVal === 'avg-asc') return parseNumeric(a.avg) - parseNumeric(b.avg);
-        if (sortVal === 'first9-desc') return parseNumeric(b.first9) - parseNumeric(a.first9);
-        if (sortVal === 'games-desc') return parseNumeric(b.games) - parseNumeric(a.games);
+      const getSortValue = (item) => {
+        if (sortVal === 'avg-desc' || sortVal === 'avg-asc') return parseNumeric(item.avg);
+        if (sortVal === 'first9-desc') return parseNumeric(item.first9);
+        if (sortVal === 'games-desc') return parseNumeric(item.games);
         return 0;
+      };
+
+      sortedStats.sort((a, b) => {
+        const valA = getSortValue(a);
+        const valB = getSortValue(b);
+        return sortVal === 'avg-asc' ? valA - valB : valB - valA;
       });
 
-      tbody.innerHTML = sortedStats.map((s, idx) => `
+      let currentRank = 0;
+      let previousVal = null;
+
+      tbody.innerHTML = sortedStats.map((s, idx) => {
+        const val = getSortValue(s);
+        if (val !== previousVal) {
+          currentRank = idx + 1;
+          previousVal = val;
+        }
+
+        return `
         <tr class="hover:bg-slate-800/40 transition">
-          <td class="px-6 py-4 text-center text-slate-500 font-bold">${idx + 1}</td>
+          <td class="px-6 py-4 text-center text-slate-500 font-bold">${currentRank}</td>
           <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${s.player}')">${s.player || '-'}</td>
           <td class="px-6 py-4 text-slate-300">${s.games || 0}</td>
           <td class="px-6 py-4 text-slate-300">${s.legs || 0}</td>
           <td class="px-6 py-4 text-emerald-400 font-extrabold">${formatNumber(s.avg)}</td>
           <td class="px-6 py-4 text-slate-200">${formatNumber(s.first9)}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function renderRecords() {
@@ -568,27 +584,40 @@
       const sortVal = document.getElementById('recordsSortSelect')?.value || '180-desc';
       let sortedRecords = [...appData.records];
 
-      sortedRecords.sort((a, b) => {
-        if (sortVal === '180-desc') return parseNumeric(b.r180) - parseNumeric(a.r180);
-        if (sortVal === '140-desc') return parseNumeric(b.r140) - parseNumeric(a.r140);
+      const getSortValue = (item) => {
+        if (sortVal === '180-desc') return parseNumeric(item.r180);
+        if (sortVal === '140-desc') return parseNumeric(item.r140);
         if (sortVal === 'shortgame-desc') {
-          const countA = (a.shortgame && a.shortgame !== '-') ? String(a.shortgame).split(',').length : 0;
-          const countB = (b.shortgame && b.shortgame !== '-') ? String(b.shortgame).split(',').length : 0;
-          return countB - countA;
+          return (item.shortgame && item.shortgame !== '-') ? String(item.shortgame).split(',').length : 0;
         }
         return 0;
+      };
+
+      sortedRecords.sort((a, b) => {
+        return getSortValue(b) - getSortValue(a);
       });
 
-      tbody.innerHTML = sortedRecords.map((r, idx) => `
+      let currentRank = 0;
+      let previousVal = null;
+
+      tbody.innerHTML = sortedRecords.map((r, idx) => {
+        const val = getSortValue(r);
+        if (val !== previousVal) {
+          currentRank = idx + 1;
+          previousVal = val;
+        }
+
+        return `
         <tr class="hover:bg-slate-800/40 transition">
-          <td class="px-6 py-4 text-center text-slate-500 font-bold">${idx + 1}</td>
+          <td class="px-6 py-4 text-center text-slate-500 font-bold">${currentRank}</td>
           <td class="px-6 py-4 font-semibold text-emerald-400 hover:text-emerald-300 cursor-pointer" onclick="openPlayerModal('${r.player}')">${r.player || '-'}</td>
           <td class="px-6 py-4 text-amber-400 font-bold">${r.r180 || 0}</td>
           <td class="px-6 py-4 text-slate-300 font-semibold">${r.r140 || 0}</td>
           <td class="px-6 py-4 text-cyan-300 font-semibold">${r.shortgame || '-'}</td>
           <td class="px-6 py-4 text-emerald-400 font-semibold">${r.highfinish || '-'}</td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function openPlayerModal(playerName) {
