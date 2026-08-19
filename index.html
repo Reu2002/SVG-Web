@@ -10,13 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-  <!-- Kompiliertes Tailwind CSS (Kein JS Play-CDN) -->
+  <!-- Kompiliertes Tailwind CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   
-  <!-- Google Fonts non-blocking -->
+  <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
   
-  <!-- FontAwesome Icons non-blocking -->
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
   <style>
@@ -57,17 +57,10 @@
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     }
 
-    /* Styling für Filter und Dropdown-Menüs (Schwarzer Hintergrund, weiße Schrift) */
     select, select option {
       background-color: #000000 !important;
       color: #FFFFFF !important;
     }
-
-    /* Custom utility fallback */
-    .bg-darts-base { background-color: #000000; }
-    .bg-darts-card { background-color: #121212; }
-    .border-darts-border { border-color: #262626; }
-    .text-darts-accent { color: #FFFFFF; }
 
     .sortable-header {
       cursor: pointer;
@@ -85,7 +78,7 @@
   <!-- Navigation Header -->
   <header class="sticky top-0 z-50 glass-card border-b border-neutral-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
+      <div class="flex flex-col sm:flex-row items-center justify-between py-4 sm:py-0 sm:h-20 gap-3 sm:gap-0">
         
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-neutral-700 flex items-center justify-center bg-neutral-900">
@@ -101,10 +94,32 @@
           </div>
         </div>
 
-        <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium">
-          <i class="fa-solid fa-rotate text-white" id="refreshIcon"></i>
-          <span>Aktualisieren</span>
-        </button>
+        <!-- Rechte Steuerung: Suchleiste + Refresh Button -->
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          <!-- Spielersuche -->
+          <div class="relative flex-1 sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
+            <input 
+              type="text" 
+              id="globalPlayerSearch" 
+              oninput="handleGlobalSearch()" 
+              placeholder="Spieler suchen..." 
+              class="w-full pl-8 pr-8 py-2 bg-black text-white text-xs rounded-xl border border-neutral-700 focus:outline-none focus:border-white transition"
+            />
+            <button 
+              id="clearSearchBtn" 
+              onclick="clearGlobalSearch()" 
+              class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white text-xs p-1">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Aktualisieren-Button -->
+          <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium whitespace-nowrap">
+            <i class="fa-solid fa-rotate text-white" id="refreshIcon"></i>
+            <span class="hidden md:inline">Aktualisieren</span>
+          </button>
+        </div>
       </div>
 
       <!-- Tabs Navigation -->
@@ -114,6 +129,9 @@
         </button>
         <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
+        </button>
+        <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
         </button>
         <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-chart-line text-xs"></i> Averages
@@ -231,7 +249,57 @@
       </div>
     </section>
 
-    <!-- Reiter 3: Averages -->
+    <!-- Reiter 3: Spielstatistiken -->
+    <section id="content-gameStats" class="space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Spielstatistiken</h2>
+          <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
+              <tr>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header">
+                  Spieler <span id="gsort-icon-player" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('games')" class="px-4 py-4 sortable-header">
+                  Spiele <span id="gsort-icon-games" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('legs')" class="px-4 py-4 sortable-header">
+                  Legs <span id="gsort-icon-legs" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('legsWonPct')" class="px-4 py-4 sortable-header">
+                  gewonnene Legs in % <span id="gsort-icon-legsWonPct" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('winsSingle')" class="px-4 py-4 sortable-header">
+                  Siege (Einzel) <span id="gsort-icon-winsSingle" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('winRateSingle')" class="px-4 py-4 sortable-header">
+                  Siegquote (Einzel) <span id="gsort-icon-winRateSingle" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('winsDouble')" class="px-4 py-4 sortable-header">
+                  Siege (Doppel) <span id="gsort-icon-winsDouble" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('winRateDouble')" class="px-4 py-4 sortable-header">
+                  Siegquote (Doppel) <span id="gsort-icon-winRateDouble" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('winRateTotal')" class="px-4 py-4 sortable-header">
+                  Siegquote (Gesamt) <span id="gsort-icon-winRateTotal" class="ml-1"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="gameStatsTable" class="divide-y divide-neutral-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reiter 4: Averages -->
     <section id="content-stats" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -281,20 +349,12 @@
       </div>
     </section>
 
-    <!-- Reiter 4: Bestleistungen -->
+    <!-- Reiter 5: Bestleistungen -->
     <section id="content-records" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
-        
-        <div class="flex items-center gap-2 glass-card p-1.5 rounded-xl">
-          <label for="recordsSortSelect" class="text-xs text-neutral-400 pl-2 font-medium flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-down-wide-short text-white"></i> Sortieren:
-          </label>
-          <select id="recordsSortSelect" onchange="renderRecords()" class="bg-black text-white text-xs rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none cursor-pointer">
-            <option value="180-desc">Meiste 180er</option>
-            <option value="140-desc">Meiste 140+</option>
-            <option value="shortgame-desc">Meiste Shortgames</option>
-          </select>
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
+          <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
       </div>
 
@@ -303,12 +363,34 @@
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-6 py-4 w-12 text-center">#</th>
-                <th class="px-6 py-4">Spieler</th>
-                <th class="px-6 py-4">180er</th>
-                <th class="px-6 py-4">140+</th>
-                <th class="px-6 py-4">Shortgames</th>
-                <th class="px-6 py-4">Highfinishes</th>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header">
+                  Spieler <span id="rsort-icon-player" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('specials')" class="px-4 py-4 sortable-header">
+                  Specials <span id="rsort-icon-specials" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('r180')" class="px-4 py-4 sortable-header">
+                  180 <span id="rsort-icon-r180" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('r140')" class="px-4 py-4 sortable-header">
+                  140+ <span id="rsort-icon-r140" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('highfinish')" class="px-4 py-4 sortable-header">
+                  Highfinish <span id="rsort-icon-highfinish" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('shortgame')" class="px-4 py-4 sortable-header">
+                  Shortgames <span id="rsort-icon-shortgame" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('shortgameChance')" class="px-4 py-4 sortable-header">
+                  Chance auf Shortgame <span id="rsort-icon-shortgameChance" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('maxSpecialsMatchday')" class="px-4 py-4 sortable-header">
+                  Meiste Specials an einem Spieltag <span id="rsort-icon-maxSpecialsMatchday" class="ml-1"></span>
+                </th>
+                <th onclick="setRecordsSort('specialsPerGame')" class="px-4 py-4 sortable-header">
+                  Specials pro Spiel <span id="rsort-icon-specialsPerGame" class="ml-1"></span>
+                </th>
               </tr>
             </thead>
             <tbody id="recordsTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -340,11 +422,11 @@
       <div class="p-6 space-y-5">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average (Einzel)</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average</div>
             <div id="modal3DartAvg" class="text-3xl font-black font-display text-white">-</div>
           </div>
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First 9 (Einzel)</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First 9 (Saison)</div>
             <div id="modalFirst9Avg" class="text-3xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
@@ -388,14 +470,28 @@
   </div>
 
   <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwyOc9ihu-3_cCzVnFi2TyXi7XF7VE1Ib2WW7BitfZ3p1GtgMvXxVkPuFqbD_AjveuU/exec";
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxrt1-YvTwx6b8W2hqdxCT0Al3gCtSMq0ZfseTHbInwoA6qTzth9Tvyc1CLIJop8oF/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
 
-    let appData = { matches: [], players: [], stats: [], records: [] };
+    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [] };
 
-    // Statische Sortier-Variablen für den Averages-Reiter
+    // Aktueller Tab
+    let activeTab = 'matches';
+
+    // Globale Suchanfrage
+    let globalSearchQuery = '';
+
+    // Statische Sortier-Variablen für Spielstatistiken
+    let currentGameStatsSortKey = 'winRateTotal';
+    let currentGameStatsSortAsc = false;
+
+    // Statische Sortier-Variablen für Averages
     let currentStatsSortKey = 'avgSingle';
     let currentStatsSortAsc = false;
+
+    // Statische Sortier-Variablen für Bestleistungen
+    let currentRecordsSortKey = 'specials';
+    let currentRecordsSortAsc = false;
 
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
@@ -403,9 +499,18 @@
       return isNaN(num) ? val : num.toFixed(2);
     }
 
+    function formatPercent(val) {
+      if (val === undefined || val === null || val === '-' || val === '') return '-';
+      const str = String(val).replace(',', '.').trim();
+      const num = parseFloat(str);
+      if (isNaN(num)) return val;
+      return str.includes('%') ? str : `${num.toFixed(1)}%`;
+    }
+
     function parseNumeric(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
-      const num = parseFloat(String(val).replace(',', '.'));
+      const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
+      const num = parseFloat(cleanStr);
       return isNaN(num) ? 0 : num;
     }
 
@@ -428,6 +533,7 @@
     }
 
     function switchTab(tabId) {
+      activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       
@@ -436,6 +542,34 @@
       
       if (targetContent) targetContent.classList.remove('hidden');
       if (targetTab) targetTab.classList.add('active');
+    }
+
+    // Globale Suchfunktion Logik
+    function handleGlobalSearch() {
+      const searchInput = document.getElementById('globalPlayerSearch');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      globalSearchQuery = searchInput.value.trim().toLowerCase();
+
+      if (globalSearchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+        // Falls man im Spielplan ist, schalte automatisch zur Spielerdatenbank um
+        if (activeTab === 'matches') {
+          switchTab('players');
+        }
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      renderPlayers();
+      renderGameStats();
+      renderStats();
+      renderRecords();
+    }
+
+    function clearGlobalSearch() {
+      const searchInput = document.getElementById('globalPlayerSearch');
+      searchInput.value = '';
+      handleGlobalSearch();
     }
 
     async function loadDataFromSheets(isManualRefresh = false) {
@@ -452,7 +586,8 @@
           matches: data.matches || [],
           players: data.players || [],
           stats: data.stats || [],
-          records: data.records || []
+          records: data.records || [],
+          gameStats: data.gameStats || data.game_stats || data.gameStatistics || []
         };
 
         localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -498,6 +633,7 @@
     function renderAllTables() {
       renderMatches();
       renderPlayers();
+      renderGameStats();
       renderStats();
       renderRecords();
     }
@@ -578,6 +714,9 @@
       const selectedFilter = document.getElementById('playerTeamFilter')?.value || '';
 
       const filteredPlayers = appData.players.filter(p => {
+        const nameMatch = !globalSearchQuery || String(p.name || '').toLowerCase().includes(globalSearchQuery);
+        if (!nameMatch) return false;
+
         if (!selectedFilter) return true;
         
         const { letter, numbers } = parsePlayerTeamTokens(p.team);
@@ -603,12 +742,105 @@
       `).join('');
     }
 
+    // Spielstatistiken Sortierung per Spaltenklick
+    function setGameStatsSort(key) {
+      if (currentGameStatsSortKey === key) {
+        currentGameStatsSortAsc = !currentGameStatsSortAsc;
+      } else {
+        currentGameStatsSortKey = key;
+        currentGameStatsSortAsc = key === 'player';
+      }
+      renderGameStats();
+    }
+
+    function updateGameStatsSortIcons() {
+      const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal'];
+      keys.forEach(k => {
+        const iconEl = document.getElementById(`gsort-icon-${k}`);
+        if (!iconEl) return;
+        if (k === currentGameStatsSortKey) {
+          iconEl.innerHTML = currentGameStatsSortAsc 
+            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
+            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+        } else {
+          iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
+        }
+      });
+    }
+
+    function renderGameStats() {
+      const tbody = document.getElementById('gameStatsTable');
+      if (!tbody) return;
+
+      updateGameStatsSortIcons();
+      let sortedData = appData.gameStats.filter(g => {
+        const name = g.player || g.name || '';
+        return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
+      });
+
+      const getVal = (item, key) => {
+        if (key === 'player') return item.player || item.name || '';
+        if (key === 'games') return parseNumeric(item.games ?? item.spiele);
+        if (key === 'legs') return parseNumeric(item.legs);
+        if (key === 'legsWonPct') return parseNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
+        if (key === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
+        if (key === 'winRateSingle') return parseNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+        if (key === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
+        if (key === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+        if (key === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+        return 0;
+      };
+
+      sortedData.sort((a, b) => {
+        const valA = getVal(a, currentGameStatsSortKey);
+        const valB = getVal(b, currentGameStatsSortKey);
+
+        if (typeof valA === 'string') {
+          return currentGameStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return currentGameStatsSortAsc ? valA - valB : valB - valA;
+      });
+
+      if (!sortedData.length) {
+        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken gefunden.</td></tr>`;
+        return;
+      }
+
+      let currentRank = 0;
+      let previousVal = null;
+
+      tbody.innerHTML = sortedData.map((g, idx) => {
+        const val = getVal(g, currentGameStatsSortKey);
+        if (val !== previousVal) {
+          currentRank = idx + 1;
+          previousVal = val;
+        }
+
+        const playerName = g.player || g.name || '-';
+
+        return `
+        <tr class="hover:bg-neutral-900/60 transition">
+          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+          <td class="px-4 py-4 text-neutral-300">${g.games ?? g.spiele ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
+          <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
+        </tr>
+      `;
+      }).join('');
+    }
+
     function setStatsSort(key) {
       if (currentStatsSortKey === key) {
         currentStatsSortAsc = !currentStatsSortAsc;
       } else {
         currentStatsSortKey = key;
-        currentStatsSortAsc = key === 'player'; // Alphabetisch standardmäßig aufsteigend, Zahlen absteigend
+        currentStatsSortAsc = key === 'player';
       }
       renderStats();
     }
@@ -633,10 +865,12 @@
       if (!tbody) return;
 
       updateStatsSortIcons();
-      let sortedStats = [...appData.stats];
+      let sortedStats = appData.stats.filter(s => {
+        const name = s.player || s.name || '';
+        return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
+      });
 
       const getVal = (item, key) => {
-        // Fallback-Mapping für unterschiedliche JSON-Schlüsselbezeichnungen aus Google Sheets
         if (key === 'player') return item.player || item.name || '';
         if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
         if (key === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
@@ -693,44 +927,94 @@
       }).join('');
     }
 
+    // Bestleistungen Sortierung per Spaltenklick
+    function setRecordsSort(key) {
+      if (currentRecordsSortKey === key) {
+        currentRecordsSortAsc = !currentRecordsSortAsc;
+      } else {
+        currentRecordsSortKey = key;
+        currentRecordsSortAsc = key === 'player';
+      }
+      renderRecords();
+    }
+
+    function updateRecordsSortIcons() {
+      const keys = ['player', 'specials', 'r180', 'r140', 'highfinish', 'shortgame', 'shortgameChance', 'maxSpecialsMatchday', 'specialsPerGame'];
+      keys.forEach(k => {
+        const iconEl = document.getElementById(`rsort-icon-${k}`);
+        if (!iconEl) return;
+        if (k === currentRecordsSortKey) {
+          iconEl.innerHTML = currentRecordsSortAsc 
+            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
+            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+        } else {
+          iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
+        }
+      });
+    }
+
     function renderRecords() {
       const tbody = document.getElementById('recordsTable');
       if (!tbody) return;
 
-      const sortVal = document.getElementById('recordsSortSelect')?.value || '180-desc';
-      let sortedRecords = [...appData.records];
+      updateRecordsSortIcons();
+      let sortedRecords = appData.records.filter(r => {
+        const name = r.player || r.name || '';
+        return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
+      });
 
-      const getSortValue = (item) => {
-        if (sortVal === '180-desc') return parseNumeric(item.r180);
-        if (sortVal === '140-desc') return parseNumeric(item.r140);
-        if (sortVal === 'shortgame-desc') {
-          return (item.shortgame && item.shortgame !== '-') ? String(item.shortgame).split(',').length : 0;
-        }
+      const getVal = (item, key) => {
+        if (key === 'player') return item.player || item.name || '';
+        if (key === 'specials') return parseNumeric(item.specials);
+        if (key === 'r180') return parseNumeric(item.r180 ?? item['180']);
+        if (key === 'r140') return parseNumeric(item.r140 ?? item['140']);
+        if (key === 'highfinish') return parseNumeric(item.highfinish);
+        if (key === 'shortgame') return parseNumeric(item.shortgame);
+        if (key === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
+        if (key === 'maxSpecialsMatchday') return parseNumeric(item.maxSpecialsMatchday ?? item.max_specials_matchday);
+        if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
         return 0;
       };
 
       sortedRecords.sort((a, b) => {
-        return getSortValue(b) - getSortValue(a);
+        const valA = getVal(a, currentRecordsSortKey);
+        const valB = getVal(b, currentRecordsSortKey);
+
+        if (typeof valA === 'string') {
+          return currentRecordsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return currentRecordsSortAsc ? valA - valB : valB - valA;
       });
+
+      if (!sortedRecords.length) {
+        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Bestleistungen gefunden.</td></tr>`;
+        return;
+      }
 
       let currentRank = 0;
       let previousVal = null;
 
       tbody.innerHTML = sortedRecords.map((r, idx) => {
-        const val = getSortValue(r);
+        const val = getVal(r, currentRecordsSortKey);
         if (val !== previousVal) {
           currentRank = idx + 1;
           previousVal = val;
         }
 
+        const playerName = r.player || r.name || '-';
+
         return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-6 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${r.player}')">${r.player || '-'}</td>
-          <td class="px-6 py-4 text-white font-bold">${r.r180 || 0}</td>
-          <td class="px-6 py-4 text-neutral-300 font-semibold">${r.r140 || 0}</td>
-          <td class="px-6 py-4 text-neutral-300 font-semibold">${r.shortgame || '-'}</td>
-          <td class="px-6 py-4 text-white font-semibold">${r.highfinish || '-'}</td>
+          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+          <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.shortgameChance ?? r.shortgame_chance ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday ?? '-'}</td>
         </tr>
       `;
       }).join('');
@@ -740,14 +1024,14 @@
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
       const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
-      const playerRecords = appData.records.find(r => r.player === playerName) || {};
+      const playerRecords = appData.records.find(r => (r.player || r.name) === playerName) || {};
 
       document.getElementById('modalPlayerName').innerText = playerName || 'Unbekannt';
       document.getElementById('modalPlayerTeam').innerText = playerInfo.team || 'Kein Team';
       document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avgSingle ?? playerStats.avg_single ?? playerStats.avg);
       document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
-      document.getElementById('modal180s').innerText = playerRecords.r180 || 0;
-      document.getElementById('modal140s').innerText = playerRecords.r140 || 0;
+      document.getElementById('modal180s').innerText = playerRecords.r180 ?? playerRecords['180'] ?? 0;
+      document.getElementById('modal140s').innerText = playerRecords.r140 ?? playerRecords['140'] ?? 0;
       document.getElementById('modalHighfinish').innerText = playerRecords.highfinish || 'Keine vorhanden';
       document.getElementById('modalShortgames').innerText = playerRecords.shortgame || 'Keine vorhanden';
 
@@ -758,7 +1042,6 @@
       document.getElementById('playerModal').classList.add('hidden');
     }
 
-    // Sofortiges Rendering beim Seitenaufruf (0ms Verzögerung) + Nachladen im Hintergrund
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -771,7 +1054,6 @@
         }
       }
       
-      // Hintergrund-Sync mit Google Sheets ausführen
       loadDataFromSheets();
     });
   </script>
