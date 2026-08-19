@@ -627,11 +627,24 @@
       if (!dateVal || dateVal === '-') return '-';
       let str = String(dateVal).trim();
       if (str.includes('T')) str = str.split('T')[0];
+
+      const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+
+      let y, m, d;
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-        const parts = str.split('-');
-        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+        [y, m, d] = str.split('-').map(Number);
+      } else if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(str)) {
+        [d, m, y] = str.split('.').map(Number);
+      } else {
+        return str;
       }
-      return str;
+
+      const dateObj = new Date(y, m - 1, d);
+      if (isNaN(dateObj.getTime())) return str;
+
+      const dayName = weekdays[dateObj.getDay()];
+      const pad = n => String(n).padStart(2, '0');
+      return `${dayName}, ${pad(d)}.${pad(m)}.${y}`;
     }
 
     function formatTime(timeVal) {
