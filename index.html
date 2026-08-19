@@ -432,6 +432,17 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3">
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Einzel)</div>
+            <div id="modalMaxAvgSingle" class="text-2xl font-black font-display text-white">-</div>
+          </div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Doppel)</div>
+            <div id="modalMaxAvgDouble" class="text-2xl font-black font-display text-neutral-300">-</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
           <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <i class="fa-solid fa-star text-white"></i>
@@ -1030,6 +1041,8 @@
       document.getElementById('modalPlayerTeam').innerText = playerInfo.team || 'Kein Team';
       document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avgSingle ?? playerStats.avg_single ?? playerStats.avg);
       document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
+      document.getElementById('modalMaxAvgSingle').innerText = formatNumber(playerStats.maxAvgSingle ?? playerStats.max_avg_single);
+      document.getElementById('modalMaxAvgDouble').innerText = formatNumber(playerStats.maxAvgDouble ?? playerStats.max_avg_double);
       document.getElementById('modal180s').innerText = playerRecords.r180 ?? playerRecords['180'] ?? 0;
       document.getElementById('modal140s').innerText = playerRecords.r140 ?? playerRecords['140'] ?? 0;
       document.getElementById('modalHighfinish').innerText = playerRecords.highfinish || 'Keine vorhanden';
