@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SVG-Darts Statistiken</title>
+  <title>SVG-Darts Liga &amp; Statistiken</title>
   
   <!-- Preconnect für schnelle Verbindungen -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,12 +89,12 @@
               SVG<span class="text-neutral-400">DARTS</span>
             </span>
             <span class="text-xs uppercase tracking-widest text-neutral-400 font-semibold block mt-1">
-              Statistik Portal
+              Liga &amp; Statistik Portal
             </span>
           </div>
         </div>
 
-        <!-- Rechte Steuerung: Suchleiste + Refresh Button -->
+        <!-- Rechte Steuerung: Suchleiste + Bemerkung + Refresh Button -->
         <div class="flex items-center gap-2.5 w-full sm:w-auto">
           <!-- Spielersuche -->
           <div class="relative flex-1 sm:w-64">
@@ -113,6 +113,12 @@
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
+
+          <!-- Änderung Button -->
+          <button id="noteBtn" onclick="toggleNoteModal()" class="px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium whitespace-nowrap">
+            <i class="fa-solid fa-comment text-white"></i>
+            <span class="hidden md:inline">Änderung</span>
+          </button>
 
           <!-- Aktualisieren-Button -->
           <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium whitespace-nowrap">
@@ -303,7 +309,7 @@
     <section id="content-stats" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-2xl font-bold font-display text-white">Averages</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Averages &amp; Leistung</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
       </div>
@@ -480,9 +486,45 @@
     </div>
   </div>
 
+  <!-- Änderung Modal -->
+  <div id="noteModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-black border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="bg-neutral-950 p-6 border-b border-neutral-800 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-comment text-white text-lg"></i>
+          <h3 class="text-lg font-bold font-display text-white">Änderung hinterlassen</h3>
+        </div>
+        <button onclick="toggleNoteModal()" class="text-neutral-400 hover:text-white p-2">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div>
+          <textarea id="noteInput" rows="3" placeholder="Änderung hier eingeben..." class="w-full bg-black text-white text-sm rounded-xl p-3 border border-neutral-700 focus:outline-none focus:border-white transition resize-none"></textarea>
+          <button onclick="saveNote()" class="mt-2 w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition">
+            Speichern
+          </button>
+        </div>
+
+        <div class="border-t border-neutral-800 pt-4">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-3">Änderungsanfragen</h4>
+          <div id="notesList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+
+      <div class="bg-black px-6 py-3 border-t border-neutral-800 text-right">
+        <button onclick="toggleNoteModal()" class="py-2 px-4 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 text-xs font-semibold rounded-xl transition">
+          Schließen
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxrt1-YvTwx6b8W2hqdxCT0Al3gCtSMq0ZfseTHbInwoA6qTzth9Tvyc1CLIJop8oF/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
+    const NOTES_CACHE_KEY = "svg_darts_user_notes";
 
     let appData = { matches: [], players: [], stats: [], records: [], gameStats: [] };
 
@@ -503,6 +545,62 @@
     // Statische Sortier-Variablen für Bestleistungen
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
+
+    // Änderungs-Logik
+    function toggleNoteModal() {
+      const modal = document.getElementById('noteModal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        renderNotes();
+      }
+    }
+
+    function getNotes() {
+      const saved = localStorage.getItem(NOTES_CACHE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveNote() {
+      const input = document.getElementById('noteInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const notes = getNotes();
+      notes.unshift({ id: Date.now(), text: text, date: new Date().toLocaleDateString('de-DE') });
+      localStorage.setItem(NOTES_CACHE_KEY, JSON.stringify(notes));
+      
+      input.value = '';
+      renderNotes();
+    }
+
+    function deleteNote(id) {
+      let notes = getNotes();
+      notes = notes.filter(n => n.id !== id);
+      localStorage.setItem(NOTES_CACHE_KEY, JSON.stringify(notes));
+      renderNotes();
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notesList');
+      const notes = getNotes();
+
+      if (!notes.length) {
+        container.innerHTML = `<p class="text-xs text-neutral-500 italic">Keine Änderungsanfragen vorhanden.</p>`;
+        return;
+      }
+
+      container.innerHTML = notes.map(n => `
+        <div class="bg-neutral-900 border border-neutral-800 p-3 rounded-xl flex justify-between items-start gap-2">
+          <div>
+            <span class="text-xs text-neutral-300 block break-words">${n.text}</span>
+            <span class="text-[10px] text-neutral-500 mt-1 block">${n.date}</span>
+          </div>
+          <button onclick="deleteNote(${n.id})" class="text-neutral-500 hover:text-red-400 p-1 text-xs">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `).join('');
+    }
 
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
