@@ -94,10 +94,10 @@
           </div>
         </div>
 
-        <!-- Rechte Steuerung: Suchleiste + Aufrufzahlen + Bemerkung + Refresh + Instagram + 3K Portal -->
-        <div class="flex items-center gap-2.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+        <!-- Rechte Steuerung: Suchleiste + Bemerkung + Refresh + Instagram + 3K Portal -->
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
           <!-- Spielersuche -->
-          <div class="relative flex-1 sm:w-64 min-w-[140px]">
+          <div class="relative flex-1 sm:w-64">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
             <input 
               type="text" 
@@ -112,12 +112,6 @@
               class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white text-xs p-1">
               <i class="fa-solid fa-xmark"></i>
             </button>
-          </div>
-
-          <!-- NEU: Aufrufzahlen Anzeige -->
-          <div title="Seitenaufrufe" class="px-3 py-2 bg-black text-neutral-300 rounded-xl flex items-center gap-2 border border-neutral-700 text-xs font-medium whitespace-nowrap shadow-sm">
-            <i class="fa-solid fa-eye text-neutral-400"></i>
-            <span id="pageViewsCount" class="font-bold text-white">0</span>
           </div>
 
           <!-- Änderung Button -->
@@ -614,19 +608,6 @@
     const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxrt1-YvTwx6b8W2hqdxCT0Al3gCtSMq0ZfseTHbInwoA6qTzth9Tvyc1CLIJop8oF/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
     const NOTES_CACHE_KEY = "svg_darts_user_notes";
-    const VIEWS_CACHE_KEY = "svg_darts_page_views";
-
-    // Funktion zum Verwalten und Anzeigen der Aufrufzahlen
-    function updatePageViewCounter() {
-      let views = parseInt(localStorage.getItem(VIEWS_CACHE_KEY) || "0", 10);
-      views += 1;
-      localStorage.setItem(VIEWS_CACHE_KEY, views.toString());
-      
-      const viewsEl = document.getElementById('pageViewsCount');
-      if (viewsEl) {
-        viewsEl.innerText = views.toLocaleString('de-DE');
-      }
-    }
 
     // Zuordnung der Teams zu ihren 3K-Darts Links
     const TEAM_URLS = {
@@ -659,8 +640,8 @@
         else if (/SVG\s*E/i.test(upperName)) matchedUrl = TEAM_URLS["SVG E"];
         else if (/SVG\s*F/i.test(upperName)) matchedUrl = TEAM_URLS["SVG F"];
         else if (/SVG\s*G/i.test(upperName)) matchedUrl = TEAM_URLS["SVG G"];
-        else if (/SVG\s*1 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
-        else if (/SVG\s*2 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
+        else if (/SVG\s*1/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
+        else if (/SVG\s*2/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
         else if (/SVG\s*8/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 8ER"];
       }
 
@@ -1403,9 +1384,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Aufrufe initialisieren
-      updatePageViewCounter();
-
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         try {
