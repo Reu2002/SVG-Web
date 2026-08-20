@@ -130,7 +130,10 @@
 
       <!-- Tabs Navigation -->
       <nav class="flex space-x-2 overflow-x-auto pb-3 pt-1 text-sm border-t border-neutral-800/60">
-        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-house text-xs"></i> Startseite
+        </button>
+        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
         </button>
         <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
@@ -162,8 +165,65 @@
       </button>
     </div>
 
+    <!-- Reiter 0: Startseite -->
+    <section id="content-home" class="space-y-8">
+      <!-- Vergangene Spiele -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
+          </h2>
+        </div>
+        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-neutral-300">
+              <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
+                <tr>
+                  <th class="px-6 py-4">Spieltag</th>
+                  <th class="px-6 py-4">Datum</th>
+                  <th class="px-6 py-4">Uhrzeit</th>
+                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Heim</th>
+                  <th class="px-6 py-4">Auswärts</th>
+                  <th class="px-6 py-4 text-center">Ergebnis</th>
+                </tr>
+              </thead>
+              <tbody id="homePastMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anstehende Spiele -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-neutral-400 text-sm"></i> Bevorstehende Spiele
+          </h2>
+        </div>
+        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-neutral-300">
+              <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
+                <tr>
+                  <th class="px-6 py-4">Spieltag</th>
+                  <th class="px-6 py-4">Datum</th>
+                  <th class="px-6 py-4">Uhrzeit</th>
+                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Heim</th>
+                  <th class="px-6 py-4">Auswärts</th>
+                  <th class="px-6 py-4 text-center">Ergebnis</th>
+                </tr>
+              </thead>
+              <tbody id="homeUpcomingMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Reiter 1: Spielplan -->
-    <section id="content-matches" class="space-y-6">
+    <section id="content-matches" class="space-y-6 hidden">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
         
@@ -529,7 +589,7 @@
     let appData = { matches: [], players: [], stats: [], records: [], gameStats: [] };
 
     // Aktueller Tab
-    let activeTab = 'matches';
+    let activeTab = 'home';
 
     // Globale Suchanfrage
     let globalSearchQuery = '';
@@ -623,12 +683,10 @@
       return isNaN(num) ? 0 : num;
     }
 
-    function formatDate(dateVal) {
-      if (!dateVal || dateVal === '-') return '-';
+    function parseMatchDate(dateVal) {
+      if (!dateVal || dateVal === '-') return null;
       let str = String(dateVal).trim();
       if (str.includes('T')) str = str.split('T')[0];
-
-      const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
 
       let y, m, d;
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
@@ -636,15 +694,22 @@
       } else if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(str)) {
         [d, m, y] = str.split('.').map(Number);
       } else {
-        return str;
+        return null;
       }
 
       const dateObj = new Date(y, m - 1, d);
-      if (isNaN(dateObj.getTime())) return str;
+      return isNaN(dateObj.getTime()) ? null : dateObj;
+    }
 
+    function formatDate(dateVal) {
+      if (!dateVal || dateVal === '-') return '-';
+      const dateObj = parseMatchDate(dateVal);
+      if (!dateObj) return String(dateVal).trim();
+
+      const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
       const dayName = weekdays[dateObj.getDay()];
       const pad = n => String(n).padStart(2, '0');
-      return `${dayName}, ${pad(d)}.${pad(m)}.${y}`;
+      return `${dayName}, ${pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
     }
 
     function formatTime(timeVal) {
@@ -674,8 +739,8 @@
 
       if (globalSearchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
-        // Falls man im Spielplan ist, schalte automatisch zur Spielerdatenbank um
-        if (activeTab === 'matches') {
+        // Falls man im Spielplan oder Home ist, schalte automatisch zur Spielerdatenbank um
+        if (activeTab === 'matches' || activeTab === 'home') {
           switchTab('players');
         }
       } else {
@@ -753,11 +818,85 @@
     }
 
     function renderAllTables() {
+      renderHome();
       renderMatches();
       renderPlayers();
       renderGameStats();
       renderStats();
       renderRecords();
+    }
+
+    // Hilfsfunktion zur Erstellung einer Tabellenzeile für Spiele
+    function createMatchRowHTML(m) {
+      const scoreRaw = String(m.score || '-').trim();
+      const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
+      
+      const scoreStyleClass = isZeroZero
+        ? 'bg-black border-neutral-700 text-neutral-400'
+        : 'bg-white border-white text-black font-black';
+
+      return `
+        <tr class="hover:bg-neutral-900/60 transition">
+          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${formatDate(m.date)}</td>
+          <td class="px-6 py-4 text-neutral-400">${formatTime(m.time || m.uhrzeit)}</td>
+          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 text-white font-medium">${m.home || '-'}</td>
+          <td class="px-6 py-4 text-white font-medium">${m.away || '-'}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm ${scoreStyleClass}">
+              ${m.score || '-'}
+            </span>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderHome() {
+      const pastTbody = document.getElementById('homePastMatchesTable');
+      const upcomingTbody = document.getElementById('homeUpcomingMatchesTable');
+      if (!pastTbody || !upcomingTbody) return;
+
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      const pastLimit = new Date(now);
+      pastLimit.setDate(pastLimit.getDate() - 7);
+
+      const upcomingLimit = new Date(now);
+      upcomingLimit.setDate(upcomingLimit.getDate() + 8);
+
+      const pastMatches = [];
+      const upcomingMatches = [];
+
+      appData.matches.forEach(m => {
+        const matchDate = parseMatchDate(m.date);
+        if (!matchDate) return;
+        
+        matchDate.setHours(0, 0, 0, 0);
+
+        if (matchDate >= pastLimit && matchDate < now) {
+          pastMatches.push({ ...m, _dateObj: matchDate });
+        } else if (matchDate >= now && matchDate <= upcomingLimit) {
+          upcomingMatches.push({ ...m, _dateObj: matchDate });
+        }
+      });
+
+      // Sortierung: Vergangene Spiele absteigend (neueste zuerst), anstehende aufsteigend
+      pastMatches.sort((a, b) => b._dateObj - a._dateObj);
+      upcomingMatches.sort((a, b) => a._dateObj - b._dateObj);
+
+      if (!pastMatches.length) {
+        pastTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele in den letzten 7 Tagen.</td></tr>`;
+      } else {
+        pastTbody.innerHTML = pastMatches.map(createMatchRowHTML).join('');
+      }
+
+      if (!upcomingMatches.length) {
+        upcomingTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele in den nächsten 8 Tagen.</td></tr>`;
+      } else {
+        upcomingTbody.innerHTML = upcomingMatches.map(createMatchRowHTML).join('');
+      }
     }
 
     function renderMatches() {
@@ -786,29 +925,7 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map(m => {
-        const scoreRaw = String(m.score || '-').trim();
-        const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
-        
-        const scoreStyleClass = isZeroZero
-          ? 'bg-black border-neutral-700 text-neutral-400'
-          : 'bg-white border-white text-black font-black';
-
-        return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
-          <td class="px-6 py-4 text-neutral-300">${formatDate(m.date)}</td>
-          <td class="px-6 py-4 text-neutral-400">${formatTime(m.time || m.uhrzeit)}</td>
-          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
-          <td class="px-6 py-4 text-white font-medium">${m.home || '-'}</td>
-          <td class="px-6 py-4 text-white font-medium">${m.away || '-'}</td>
-          <td class="px-6 py-4 text-center">
-            <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm ${scoreStyleClass}">
-              ${m.score || '-'}
-            </span>
-          </td>
-        </tr>
-      `}).join('');
+      tbody.innerHTML = filtered.map(createMatchRowHTML).join('');
     }
 
     function parsePlayerTeamTokens(teamStr) {
