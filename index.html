@@ -1113,6 +1113,67 @@
       });
     }
 
+    // Berechnet die Spiele für einen Spieler im Format "Gespielt/Maximal"
+    function calculatePlayerGamesDisplay(playerName, actualGames) {
+      const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
+      if (!playerObj || !playerObj.team) {
+        return `${actualGames || 0}/0`;
+      }
+
+      const teamParts = String(playerObj.team).split('/').map(s => s.trim());
+      if (!teamParts.length) return `${actualGames || 0}/0`;
+
+      // Maßgeblich: Der erste Buchstabe sowie die Zahlen in der Teamzuordnung (zweiter Buchstabe wird ignoriert)
+      const primaryLetter = teamParts.find(p => /^[A-Za-z]$/.test(p));
+      const numbers = teamParts.filter(p => /^\d+$/.test(p));
+
+      const activeTokens = [];
+      if (primaryLetter) activeTokens.push(primaryLetter.toUpperCase());
+      numbers.forEach(n => activeTokens.push(n));
+
+      let maxGames = 0;
+
+      activeTokens.forEach(token => {
+        let isMatch = (m) => false;
+
+        if (token === 'A') {
+          isMatch = (m) => /SVG\s*A\b/i.test(m.home) || /SVG\s*A\b/i.test(m.away);
+        } else if (token === '8') {
+          isMatch = (m) => /SVG\s*8/i.test(m.home) || /SVG\s*8/i.test(m.away);
+        } else if (/^[B-Z]$/.test(token)) {
+          isMatch = (m) => {
+            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
+            return regex.test(m.home) || regex.test(m.away);
+          };
+        } else if (/^\d+$/.test(token)) {
+          isMatch = (m) => {
+            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
+            return regex.test(m.home) || regex.test(m.away);
+          };
+        }
+
+        const teamMatches = appData.matches.filter(isMatch);
+
+        teamMatches.forEach(m => {
+          const homeStr = String(m.home || '').toLowerCase();
+          const awayStr = String(m.away || '').toLowerCase();
+
+          // Freilos = 0 Spiele
+          if (homeStr.includes('freilos') || awayStr.includes('freilos')) {
+            maxGames += 0;
+          } else if (token === 'A') {
+            maxGames += 3;
+          } else if (token === '8') {
+            maxGames += 2;
+          } else {
+            maxGames += 4;
+          }
+        });
+      });
+
+      return `${actualGames || 0}/${maxGames}`;
+    }
+
     function renderGameStats() {
       const tbody = document.getElementById('gameStatsTable');
       if (!tbody) return;
@@ -1162,12 +1223,14 @@
         }
 
         const playerName = g.player || g.name || '-';
+        const rawActualGames = g.games ?? g.spiele ?? 0;
+        const formattedGames = calculatePlayerGamesDisplay(playerName, rawActualGames);
 
         return `
         <tr class="hover:bg-neutral-900/60 transition">
           <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
           <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-neutral-300">${g.games ?? g.spiele ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300">${formattedGames}</td>
           <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
           <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
