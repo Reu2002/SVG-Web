@@ -94,8 +94,8 @@
           </div>
         </div>
 
-        <!-- Rechte Steuerung: Suchleiste + Refresh + Instagram + 3K Portal -->
-        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+        <!-- Rechte Steuerung: Suchleiste + Refresh + Notizen + Instagram + 3K Portal -->
+        <div class="flex items-center gap-2.5 w-full sm:w-auto relative">
           <!-- Spielersuche -->
           <div class="relative flex-1 sm:w-64">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
@@ -112,6 +112,40 @@
               class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white text-xs p-1">
               <i class="fa-solid fa-xmark"></i>
             </button>
+          </div>
+
+          <!-- Notizen / Änderungen Button -->
+          <div class="relative">
+            <button id="notesToggleBtn" onclick="toggleNotesDropdown()" class="px-3 py-2 bg-black hover:bg-neutral-900 text-white rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-xs font-semibold">
+              <i class="fa-solid fa-note-sticky text-yellow-400"></i>
+              <span class="hidden md:inline">Notizen</span>
+              <span id="notesBadge" class="hidden bg-neutral-700 text-white text-xs px-1.5 py-0.5 rounded-full font-mono">0</span>
+            </button>
+
+            <!-- Notizen Dropdown Menü -->
+            <div id="notesDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 glass-card bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-4 z-50">
+              <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
+                <h3 class="text-sm font-bold font-display text-white flex items-center gap-2">
+                  <i class="fa-solid fa-pen-to-square text-yellow-400"></i> Notizen & Änderungen
+                </h3>
+                <button onclick="toggleNotesDropdown()" class="text-neutral-400 hover:text-white text-xs">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <!-- Notiz Hinzufügen Formular -->
+              <div class="space-y-2 mb-4">
+                <textarea id="newNoteInput" rows="2" placeholder="Änderungswunsch oder Notiz eintragen..." class="w-full bg-black border border-neutral-700 rounded-xl p-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white resize-none"></textarea>
+                <button onclick="submitNewNote()" id="submitNoteBtn" class="w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-paper-plane"></i> Notiz speichern
+                </button>
+              </div>
+
+              <!-- Liste der Notizen -->
+              <div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="notesListContainer">
+                <div class="text-center py-4 text-xs text-neutral-500">Lade Notizen...</div>
+              </div>
+            </div>
           </div>
 
           <!-- Aktualisieren-Button -->
@@ -570,7 +604,7 @@
   </div>
 
   <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxrt1-YvTwx6b8W2hqdxCT0Al3gCtSMq0ZfseTHbInwoA6qTzth9Tvyc1CLIJop8oF/exec";
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyG6-jjdlN3nDHxboZnMddZ01RPdyRrSDduZLd7cB_K8lgqOT3nyuy2k84n8tbGenOu/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
 
     // Zuordnung der Teams zu ihren 3K-Darts Links
@@ -593,7 +627,6 @@
       const cleanName = String(teamName).trim();
       const upperName = cleanName.toUpperCase();
 
-      // Exakter Treffer oder Regex-Prüfung für Varianten (z. B. "SVG A-Team")
       let matchedUrl = TEAM_URLS[cleanName] || TEAM_URLS[upperName];
 
       if (!matchedUrl) {
@@ -616,7 +649,6 @@
       return cleanName;
     }
 
-    // Formatierungsfunktion für das Spielerprofil-Modal
     function formatTeamDisplay(rawTeam) {
       if (!rawTeam || rawTeam === '-') return 'Kein Team';
 
@@ -650,7 +682,7 @@
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
     }
 
-    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [] };
+    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
 
     // Aktueller Tab
     let activeTab = 'home';
@@ -658,15 +690,13 @@
     // Globale Suchanfrage
     let globalSearchQuery = '';
 
-    // Statische Sortier-Variablen für Spielstatistiken
+    // Sortier-Variablen
     let currentGameStatsSortKey = 'winRateTotal';
     let currentGameStatsSortAsc = false;
 
-    // Statische Sortier-Variablen für Averages
     let currentStatsSortKey = 'avgSingle';
     let currentStatsSortAsc = false;
 
-    // Statische Sortier-Variablen für Bestleistungen
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
@@ -739,7 +769,6 @@
       if (targetTab) targetTab.classList.add('active');
     }
 
-    // Globale Suchfunktion Logik
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -747,7 +776,6 @@
 
       if (globalSearchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
-        // Falls man im Spielplan oder Home ist, schalte automatisch zur Spielerdatenbank um
         if (activeTab === 'matches' || activeTab === 'home') {
           switchTab('players');
         }
@@ -782,12 +810,14 @@
           players: data.players || [],
           stats: data.stats || [],
           records: data.records || [],
-          gameStats: data.gameStats || data.game_stats || data.gameStatistics || []
+          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
+          notes: data.notes || []
         };
 
         localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
         populateMatchFilters();
         renderAllTables();
+        renderNotes();
       } catch (err) {
         console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
       } finally {
@@ -795,6 +825,89 @@
       }
     }
 
+    /* ---------------- NOTIZEN LOGIK ---------------- */
+    function toggleNotesDropdown() {
+      const dropdown = document.getElementById('notesDropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notesListContainer');
+      const badge = document.getElementById('notesBadge');
+      const notes = appData.notes || [];
+
+      if (notes.length > 0) {
+        badge.innerText = notes.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (!notes.length) {
+        container.innerHTML = `<div class="text-center py-4 text-xs text-neutral-500">Keine Notizen vorhanden.</div>`;
+        return;
+      }
+
+      container.innerHTML = notes.slice().reverse().map(note => `
+        <div class="bg-black border border-neutral-800 rounded-xl p-2.5 flex items-start justify-between gap-2">
+          <div class="space-y-1 overflow-hidden">
+            <span class="text-[10px] text-neutral-500 font-mono block">${note.datum}</span>
+            <p class="text-xs text-neutral-200 break-words">${note.text}</p>
+          </div>
+          <button onclick="deleteNote(${note.rowIndex})" class="text-neutral-600 hover:text-red-400 p-1 transition flex-shrink-0" title="Löschen">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function submitNewNote() {
+      const input = document.getElementById('newNoteInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('submitNoteBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Speichern...`;
+
+      const nowStr = new Date().toLocaleString("de-DE", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      try {
+        await fetch(SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', datum: nowStr, text: text })
+        });
+
+        input.value = '';
+        await loadDataFromSheets();
+      } catch (err) {
+        console.error("Fehler beim Speichern:", err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Notiz speichern`;
+      }
+    }
+
+    async function deleteNote(rowIndex) {
+      if (!confirm("Möchtest du diese Notiz wirklich löschen?")) return;
+
+      try {
+        await fetch(SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
+        });
+
+        await loadDataFromSheets();
+      } catch (err) {
+        console.error("Fehler beim Löschen:", err);
+      }
+    }
+
+    /* ---------------- FILTER & RENDER LOGIK ---------------- */
     function populateMatchFilters() {
       const matchdaySelect = document.getElementById('filterMatchday');
       const teamSelect = document.getElementById('filterTeam');
@@ -834,7 +947,6 @@
       renderRecords();
     }
 
-    // Hilfsfunktion zur Erstellung einer Tabellenzeile für Spiele mit verlinkten Teams
     function createMatchRowHTML(m) {
       const scoreRaw = String(m.score || '-').trim();
       const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
@@ -890,7 +1002,6 @@
         }
       });
 
-      // Sortierung: Vergangene Spiele absteigend (neueste zuerst), anstehende aufsteigend
       pastMatches.sort((a, b) => b._dateObj - a._dateObj);
       upcomingMatches.sort((a, b) => a._dateObj - b._dateObj);
 
@@ -989,7 +1100,6 @@
       `).join('');
     }
 
-    // Spielstatistiken Sortierung per Spaltenklick
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1015,7 +1125,6 @@
       });
     }
 
-    // Berechnet die Spiele für einen Spieler im Format "Gespielt/Maximal"
     function calculatePlayerGamesDisplay(playerName, actualGames) {
       const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
       if (!playerObj || !playerObj.team) {
@@ -1025,7 +1134,6 @@
       const teamParts = String(playerObj.team).split('/').map(s => s.trim());
       if (!teamParts.length) return `${actualGames || 0}/0`;
 
-      // Maßgeblich: Der erste Buchstabe sowie die Zahlen in der Teamzuordnung (zweiter Buchstabe wird ignoriert)
       const primaryLetter = teamParts.find(p => /^[A-Za-z]$/.test(p));
       const numbers = teamParts.filter(p => /^\d+$/.test(p));
 
@@ -1060,7 +1168,6 @@
           const homeStr = String(m.home || '').toLowerCase();
           const awayStr = String(m.away || '').toLowerCase();
 
-          // Freilos = 0 Spiele
           if (homeStr.includes('freilos') || awayStr.includes('freilos')) {
             maxGames += 0;
           } else if (token === 'A') {
@@ -1237,7 +1344,6 @@
       }).join('');
     }
 
-    // Bestleistungen Sortierung per Spaltenklick
     function setRecordsSort(key) {
       if (currentRecordsSortKey === key) {
         currentRecordsSortAsc = !currentRecordsSortAsc;
@@ -1361,6 +1467,7 @@
           appData = JSON.parse(cached);
           populateMatchFilters();
           renderAllTables();
+          renderNotes();
         } catch (e) {
           console.error("Cache Read Error", e);
         }
