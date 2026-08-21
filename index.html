@@ -235,7 +235,10 @@
     <!-- Reiter 1: Spielplan -->
     <section id="content-matches" class="space-y-6 hidden">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
+          <p class="text-xs text-neutral-400 mt-1">Klicke auf ein Team der SVG, um es bei 3k aufzurufen.</p>
+        </div>
         
         <div class="flex flex-wrap items-center gap-2 glass-card p-2 rounded-2xl">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
@@ -287,7 +290,10 @@
     <!-- Reiter 2: Spielerdatenbank -->
     <section id="content-players" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 class="text-2xl font-bold font-display text-white">Spielerdatenbank</h2>
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Spielerdatenbank</h2>
+          <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spielerin oder einen Spieler, um das Profil aufzurufen.</p>
+        </div>
         
         <div class="flex items-center gap-2 glass-card p-2 rounded-2xl">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
@@ -640,8 +646,8 @@
         else if (/SVG\s*E/i.test(upperName)) matchedUrl = TEAM_URLS["SVG E"];
         else if (/SVG\s*F/i.test(upperName)) matchedUrl = TEAM_URLS["SVG F"];
         else if (/SVG\s*G/i.test(upperName)) matchedUrl = TEAM_URLS["SVG G"];
-        else if (/SVG\s*1/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
-        else if (/SVG\s*2/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
+        else if (/SVG\s*1 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
+        else if (/SVG\s*2 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
         else if (/SVG\s*8/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 8ER"];
       }
 
