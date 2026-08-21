@@ -591,7 +591,7 @@
       <div class="p-6 space-y-4">
         <div>
           <textarea id="noteInput" rows="3" placeholder="Änderung hier eingeben..." class="w-full bg-black text-white text-sm rounded-xl p-3 border border-neutral-700 focus:outline-none focus:border-white transition resize-none"></textarea>
-          <button onclick="saveNote()" class="mt-2 w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition">
+          <button id="saveNoteBtn" onclick="saveNote()" class="mt-2 w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition">
             Speichern
           </button>
         </div>
@@ -613,7 +613,6 @@
   <script>
     const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxxrt1-YvTwx6b8W2hqdxCT0Al3gCtSMq0ZfseTHbInwoA6qTzth9Tvyc1CLIJop8oF/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
-    const NOTES_CACHE_KEY = "svg_darts_user_notes";
 
     // Zuordnung der Teams zu ihren 3K-Darts Links
     const TEAM_URLS = {
@@ -635,7 +634,6 @@
       const cleanName = String(teamName).trim();
       const upperName = cleanName.toUpperCase();
 
-      // Exakter Treffer oder Regex-Prüfung für Varianten (z. B. "SVG A-Team")
       let matchedUrl = TEAM_URLS[cleanName] || TEAM_URLS[upperName];
 
       if (!matchedUrl) {
@@ -658,7 +656,6 @@
       return cleanName;
     }
 
-    // Formatierungsfunktion für das Spielerprofil-Modal
     function formatTeamDisplay(rawTeam) {
       if (!rawTeam || rawTeam === '-') return 'Kein Team';
 
@@ -692,27 +689,21 @@
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
     }
 
-    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [] };
+    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
 
-    // Aktueller Tab
     let activeTab = 'home';
-
-    // Globale Suchanfrage
     let globalSearchQuery = '';
 
-    // Statische Sortier-Variablen für Spielstatistiken
     let currentGameStatsSortKey = 'winRateTotal';
     let currentGameStatsSortAsc = false;
 
-    // Statische Sortier-Variablen für Averages
     let currentStatsSortKey = 'avgSingle';
     let currentStatsSortAsc = false;
 
-    // Statische Sortier-Variablen für Bestleistungen
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
-    // Änderungs-Logik
+    // Globale Änderungs-Logik (Google Apps Script API)
     function toggleNoteModal() {
       const modal = document.getElementById('noteModal');
       modal.classList.toggle('hidden');
@@ -721,34 +712,55 @@
       }
     }
 
-    function getNotes() {
-      const saved = localStorage.getItem(NOTES_CACHE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    }
-
-    function saveNote() {
+    async function saveNote() {
       const input = document.getElementById('noteInput');
+      const btn = document.getElementById('saveNoteBtn');
       const text = input.value.trim();
       if (!text) return;
 
-      const notes = getNotes();
-      notes.unshift({ id: Date.now(), text: text, date: new Date().toLocaleDateString('de-DE') });
-      localStorage.setItem(NOTES_CACHE_KEY, JSON.stringify(notes));
-      
-      input.value = '';
-      renderNotes();
+      btn.disabled = true;
+      btn.innerText = 'Speichere...';
+
+      try {
+        await fetch(SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'addNote', text: text, date: new Date().toLocaleDateString('de-DE') })
+        });
+        
+        input.value = '';
+        await loadDataFromSheets();
+        renderNotes();
+      } catch (err) {
+        console.error("Fehler beim Speichern der Änderung:", err);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Speichern';
+      }
     }
 
-    function deleteNote(id) {
-      let notes = getNotes();
-      notes = notes.filter(n => n.id !== id);
-      localStorage.setItem(NOTES_CACHE_KEY, JSON.stringify(notes));
-      renderNotes();
+    async function deleteNote(id) {
+      if (!confirm("Möchtest du diese Änderung wirklich löschen?")) return;
+
+      try {
+        await fetch(SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'deleteNote', id: id })
+        });
+
+        await loadDataFromSheets();
+        renderNotes();
+      } catch (err) {
+        console.error("Fehler beim Löschen der Änderung:", err);
+      }
     }
 
     function renderNotes() {
       const container = document.getElementById('notesList');
-      const notes = getNotes();
+      const notes = appData.notes || [];
 
       if (!notes.length) {
         container.innerHTML = `<p class="text-xs text-neutral-500 italic">Keine Änderungsanfragen vorhanden.</p>`;
@@ -759,9 +771,9 @@
         <div class="bg-neutral-900 border border-neutral-800 p-3 rounded-xl flex justify-between items-start gap-2">
           <div>
             <span class="text-xs text-neutral-300 block break-words">${n.text}</span>
-            <span class="text-[10px] text-neutral-500 mt-1 block">${n.date}</span>
+            <span class="text-[10px] text-neutral-500 mt-1 block">${n.date || ''}</span>
           </div>
-          <button onclick="deleteNote(${n.id})" class="text-neutral-500 hover:text-red-400 p-1 text-xs">
+          <button onclick="deleteNote('${n.id}')" class="text-neutral-500 hover:text-red-400 p-1 text-xs">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -837,7 +849,6 @@
       if (targetTab) targetTab.classList.add('active');
     }
 
-    // Globale Suchfunktion Logik
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -845,7 +856,6 @@
 
       if (globalSearchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
-        // Falls man im Spielplan oder Home ist, schalte automatisch zur Spielerdatenbank um
         if (activeTab === 'matches' || activeTab === 'home') {
           switchTab('players');
         }
@@ -880,7 +890,8 @@
           players: data.players || [],
           stats: data.stats || [],
           records: data.records || [],
-          gameStats: data.gameStats || data.game_stats || data.gameStatistics || []
+          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
+          notes: data.notes || []
         };
 
         localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -930,9 +941,9 @@
       renderGameStats();
       renderStats();
       renderRecords();
+      renderNotes();
     }
 
-    // Hilfsfunktion zur Erstellung einer Tabellenzeile für Spiele mit verlinkten Teams
     function createMatchRowHTML(m) {
       const scoreRaw = String(m.score || '-').trim();
       const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
@@ -988,7 +999,6 @@
         }
       });
 
-      // Sortierung: Vergangene Spiele absteigend (neueste zuerst), anstehende aufsteigend
       pastMatches.sort((a, b) => b._dateObj - a._dateObj);
       upcomingMatches.sort((a, b) => a._dateObj - b._dateObj);
 
@@ -1087,7 +1097,6 @@
       `).join('');
     }
 
-    // Spielstatistiken Sortierung per Spaltenklick
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1113,7 +1122,6 @@
       });
     }
 
-    // Berechnet die Spiele für einen Spieler im Format "Gespielt/Maximal"
     function calculatePlayerGamesDisplay(playerName, actualGames) {
       const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
       if (!playerObj || !playerObj.team) {
@@ -1123,7 +1131,6 @@
       const teamParts = String(playerObj.team).split('/').map(s => s.trim());
       if (!teamParts.length) return `${actualGames || 0}/0`;
 
-      // Maßgeblich: Der erste Buchstabe sowie die Zahlen in der Teamzuordnung (zweiter Buchstabe wird ignoriert)
       const primaryLetter = teamParts.find(p => /^[A-Za-z]$/.test(p));
       const numbers = teamParts.filter(p => /^\d+$/.test(p));
 
@@ -1158,7 +1165,6 @@
           const homeStr = String(m.home || '').toLowerCase();
           const awayStr = String(m.away || '').toLowerCase();
 
-          // Freilos = 0 Spiele
           if (homeStr.includes('freilos') || awayStr.includes('freilos')) {
             maxGames += 0;
           } else if (token === 'A') {
@@ -1335,7 +1341,6 @@
       }).join('');
     }
 
-    // Bestleistungen Sortierung per Spaltenklick
     function setRecordsSort(key) {
       if (currentRecordsSortKey === key) {
         currentRecordsSortAsc = !currentRecordsSortAsc;
