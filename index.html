@@ -2,7 +2,8 @@
 <html lang="de" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1280, initial-scale=0.3, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+  <!-- Desktop-Ansicht erzwingen -->
+  <meta name="viewport" content="width=1280, initial-scale=0.1, user-scalable=yes">
   <title>SVG-Darts Statistiken</title>
   
   <!-- Preconnect für schnelle Verbindungen -->
@@ -20,6 +21,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
   <style>
+    /* Desktop-Layout erpression für mobile Endgeräte */
+    html, body {
+      min-width: 1280px !important;
+      width: 1280px !important;
+      overflow-x: auto;
+    }
+
     body {
       background-color: #000000;
       background-image: 
