@@ -2,7 +2,7 @@
 <html lang="de" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=1280, initial-scale=0.3, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
   <title>SVG-Darts Statistiken</title>
   
   <!-- Preconnect für schnelle Verbindungen -->
@@ -34,7 +34,7 @@
       font-family: 'Montserrat', sans-serif;
     }
 
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #000000; }
     ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #404040; }
@@ -78,28 +78,26 @@
   <!-- Navigation Header -->
   <header class="sticky top-0 z-50 glass-card border-b border-neutral-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row items-center justify-between py-3 md:py-0 md:h-20 gap-3 md:gap-0">
+      <div class="flex flex-col sm:flex-row items-center justify-between py-4 sm:py-0 sm:h-20 gap-3 sm:gap-0">
         
-        <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-neutral-700 flex items-center justify-center bg-neutral-900">
-              <img src="https://i.postimg.cc/JnWfvy70/SVG.jpg" alt="SVG Darts Logo" class="w-full h-full object-cover">
-            </div>
-            <div>
-              <span class="text-xl sm:text-2xl font-black font-display tracking-tight text-white block leading-none">
-                SVG<span class="text-neutral-400">DARTS</span>
-              </span>
-              <span class="text-[10px] sm:text-xs uppercase tracking-widest text-neutral-400 font-semibold block mt-1">
-                Statistik Portal
-              </span>
-            </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-neutral-700 flex items-center justify-center bg-neutral-900">
+            <img src="https://i.postimg.cc/JnWfvy70/SVG.jpg" alt="SVG Darts Logo" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <span class="text-2xl font-black font-display tracking-tight text-white block leading-none">
+              SVG<span class="text-neutral-400">DARTS</span>
+            </span>
+            <span class="text-xs uppercase tracking-widest text-neutral-400 font-semibold block mt-1">
+              Statistik Portal
+            </span>
           </div>
         </div>
 
         <!-- Rechte Steuerung: Suchleiste + Refresh + Änderungen + Instagram + 3K Portal -->
-        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+        <div class="flex items-center gap-2.5 w-full sm:w-auto relative">
           <!-- Spielersuche -->
-          <div class="relative flex-1 min-w-[140px] md:w-64">
+          <div class="relative flex-1 sm:w-64">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
             <input 
               type="text" 
@@ -116,78 +114,76 @@
             </button>
           </div>
 
-          <div class="flex items-center gap-2">
-            <!-- Änderungen Button -->
-            <div class="relative">
-              <button id="notesToggleBtn" onclick="toggleNotesDropdown()" class="px-3 py-2 bg-black hover:bg-neutral-900 text-white rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-xs font-semibold">
-                <i class="fa-solid fa-pen-to-square text-yellow-400"></i>
-                <span class="hidden sm:inline">Änderungen</span>
-                <span id="notesBadge" class="hidden bg-neutral-700 text-white text-xs px-1.5 py-0.5 rounded-full font-mono">0</span>
-              </button>
-
-              <!-- Änderungen Dropdown Menü -->
-              <div id="notesDropdown" class="hidden absolute right-0 mt-2 w-72 sm:w-96 glass-card bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-4 z-50">
-                <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
-                  <h3 class="text-sm font-bold font-display text-white flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square text-yellow-400"></i> Änderungen
-                  </h3>
-                  <button onclick="toggleNotesDropdown()" class="text-neutral-400 hover:text-white text-xs">
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
-
-                <!-- Formular -->
-                <div class="space-y-2 mb-4">
-                  <textarea id="newNoteInput" rows="2" placeholder="Änderung eintragen..." class="w-full bg-black border border-neutral-700 rounded-xl p-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white resize-none"></textarea>
-                  <button onclick="submitNewNote()" id="submitNoteBtn" class="w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-paper-plane"></i> Vorschlag speichern
-                  </button>
-                </div>
-
-                <!-- Liste der Änderungen -->
-                <div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="notesListContainer">
-                  <div class="text-center py-4 text-xs text-neutral-500">Lade Vorschläge...</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Aktualisieren-Button -->
-            <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-3 sm:px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-xs sm:text-sm font-medium whitespace-nowrap">
-              <i class="fa-solid fa-rotate text-white" id="refreshIcon"></i>
-              <span class="hidden sm:inline">Aktualisieren</span>
+          <!-- Änderungen Button -->
+          <div class="relative">
+            <button id="notesToggleBtn" onclick="toggleNotesDropdown()" class="px-3 py-2 bg-black hover:bg-neutral-900 text-white rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-xs font-semibold">
+              <i class="fa-solid fa-pen-to-square text-yellow-400"></i>
+              <span class="hidden md:inline">Änderungen</span>
+              <span id="notesBadge" class="hidden bg-neutral-700 text-white text-xs px-1.5 py-0.5 rounded-full font-mono">0</span>
             </button>
 
-            <!-- Instagram Link Button -->
-            <a href="https://www.instagram.com/svgdarts/?hl=de" target="_blank" rel="noopener noreferrer" title="SVG Göttingen Darts auf Instagram" class="p-2 sm:p-2.5 bg-black hover:bg-neutral-900 text-white hover:text-pink-500 rounded-xl flex items-center justify-center border border-neutral-700 transition shadow-sm text-xs sm:text-sm font-medium">
-              <i class="fa-brands fa-instagram text-base sm:text-lg"></i>
-            </a>
+            <!-- Änderungen Dropdown Menü -->
+            <div id="notesDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 glass-card bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-4 z-50">
+              <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
+                <h3 class="text-sm font-bold font-display text-white flex items-center gap-2">
+                  <i class="fa-solid fa-pen-to-square text-yellow-400"></i> Änderungen
+                </h3>
+                <button onclick="toggleNotesDropdown()" class="text-neutral-400 hover:text-white text-xs">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
 
-            <!-- 3K Darts Portal Link Button -->
-            <a href="https://portal.3k-darts.com/frontend/events/10/mandant/570" target="_blank" rel="noopener noreferrer" title="3K Darts Portal" class="px-2.5 sm:px-3 py-2 bg-black hover:bg-neutral-900 text-white hover:text-yellow-400 rounded-xl flex items-center justify-center border border-neutral-700 transition shadow-sm text-xs font-black tracking-wider font-display">
-              3K
-            </a>
+              <!-- Formular -->
+              <div class="space-y-2 mb-4">
+                <textarea id="newNoteInput" rows="2" placeholder="Änderung eintragen..." class="w-full bg-black border border-neutral-700 rounded-xl p-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white resize-none"></textarea>
+                <button onclick="submitNewNote()" id="submitNoteBtn" class="w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-paper-plane"></i> Vorschlag speichern
+                </button>
+              </div>
+
+              <!-- Liste der Änderungen -->
+              <div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="notesListContainer">
+                <div class="text-center py-4 text-xs text-neutral-500">Lade Vorschläge...</div>
+              </div>
+            </div>
           </div>
+
+          <!-- Aktualisieren-Button -->
+          <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium whitespace-nowrap">
+            <i class="fa-solid fa-rotate text-white" id="refreshIcon"></i>
+            <span class="hidden md:inline">Aktualisieren</span>
+          </button>
+
+          <!-- Instagram Link Button -->
+          <a href="https://www.instagram.com/svgdarts/?hl=de" target="_blank" rel="noopener noreferrer" title="SVG Göttingen Darts auf Instagram" class="p-2.5 bg-black hover:bg-neutral-900 text-white hover:text-pink-500 rounded-xl flex items-center justify-center border border-neutral-700 transition shadow-sm text-sm font-medium">
+            <i class="fa-brands fa-instagram text-lg"></i>
+          </a>
+
+          <!-- 3K Darts Portal Link Button -->
+          <a href="https://portal.3k-darts.com/frontend/events/10/mandant/570" target="_blank" rel="noopener noreferrer" title="3K Darts Portal" class="px-3 py-2 bg-black hover:bg-neutral-900 text-white hover:text-yellow-400 rounded-xl flex items-center justify-center border border-neutral-700 transition shadow-sm text-xs font-black tracking-wider font-display">
+            3K
+          </a>
         </div>
       </div>
 
-      <!-- Tabs Navigation (Horizontal Scroller auf Mobilgeräten) -->
-      <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto pb-3 pt-1 text-xs sm:text-sm border-t border-neutral-800/60 no-scrollbar">
-        <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-3 sm:px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+      <!-- Tabs Navigation -->
+      <nav class="flex space-x-2 overflow-x-auto pb-3 pt-1 text-sm border-t border-neutral-800/60">
+        <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-house text-xs"></i> Startseite
         </button>
-        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-3 sm:px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
         </button>
-        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-3 sm:px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
         </button>
-        <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-3 sm:px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
         </button>
-        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-3 sm:px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-chart-line text-xs"></i> Averages
         </button>
-        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-3 sm:px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
         </button>
       </nav>
@@ -195,7 +191,7 @@
   </header>
 
   <!-- Main Content Area -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-1 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
     
     <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all bg-black border border-neutral-800">
       <div class="flex items-center gap-3">
@@ -211,22 +207,22 @@
     <section id="content-home" class="space-y-8">
       <div class="space-y-4">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg sm:text-xl font-bold font-display text-white flex items-center gap-2">
+          <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
         <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-          <div class="w-full">
-            <table class="w-full text-left text-[10px] sm:text-xs text-neutral-300 table-fixed">
-              <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[9px] sm:text-[10px] font-bold tracking-wider border-b border-neutral-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-neutral-300">
+              <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
                 <tr>
-                  <th class="px-1 sm:px-2 py-2 w-[10%]">Stg.</th>
-                  <th class="px-1 sm:px-2 py-2 w-[16%]">Datum</th>
-                  <th class="px-1 sm:px-2 py-2 w-[12%]">Zeit</th>
-                  <th class="px-1 sm:px-2 py-2 w-[16%]">Ort</th>
-                  <th class="px-1 sm:px-2 py-2 w-[18%]">Heim</th>
-                  <th class="px-1 sm:px-2 py-2 w-[18%]">Ausw.</th>
-                  <th class="px-1 sm:px-2 py-2 w-[10%] text-center">Erg.</th>
+                  <th class="px-6 py-4">Spieltag</th>
+                  <th class="px-6 py-4">Datum</th>
+                  <th class="px-6 py-4">Uhrzeit</th>
+                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Heim</th>
+                  <th class="px-6 py-4">Auswärts</th>
+                  <th class="px-6 py-4 text-center">Ergebnis</th>
                 </tr>
               </thead>
               <tbody id="homePastMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -237,50 +233,50 @@
 
       <div class="space-y-4">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <h2 class="text-lg sm:text-xl font-bold font-display text-white flex items-center gap-2">
+          <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
             <i class="fa-solid fa-calendar-check text-neutral-400 text-sm"></i> Bevorstehende Spiele
           </h2>
 
           <!-- Filterleiste für bevorstehende Spiele auf der Startseite -->
-          <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 glass-card p-2 rounded-2xl">
-            <div class="col-span-2 sm:col-span-1 flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+          <div class="flex flex-wrap items-center gap-2 glass-card p-2 rounded-2xl">
+            <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
             </div>
             
-            <select id="filterHomeMatchday" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+            <select id="filterHomeMatchday" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
               <option value="">Spieltag</option>
             </select>
 
-            <select id="filterHomeTeam" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+            <select id="filterHomeTeam" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
               <option value="">Teams</option>
             </select>
 
-            <select id="filterHomeDate" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+            <select id="filterHomeDate" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
               <option value="">Datum</option>
             </select>
 
-            <select id="filterHomeLocation" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+            <select id="filterHomeLocation" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
               <option value="">Spielort</option>
             </select>
 
-            <button onclick="resetHomeMatchFilters()" class="col-span-2 sm:col-span-1 text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center justify-center gap-1.5">
+            <button onclick="resetHomeMatchFilters()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
               <i class="fa-solid fa-rotate-left text-white"></i> Reset
             </button>
           </div>
         </div>
 
         <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-          <div class="w-full">
-            <table class="w-full text-left text-[10px] sm:text-xs text-neutral-300 table-fixed">
-              <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[9px] sm:text-[10px] font-bold tracking-wider border-b border-neutral-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-neutral-300">
+              <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
                 <tr>
-                  <th class="px-1 sm:px-2 py-2 w-[10%]">Stg.</th>
-                  <th class="px-1 sm:px-2 py-2 w-[16%]">Datum</th>
-                  <th class="px-1 sm:px-2 py-2 w-[12%]">Zeit</th>
-                  <th class="px-1 sm:px-2 py-2 w-[16%]">Ort</th>
-                  <th class="px-1 sm:px-2 py-2 w-[18%]">Heim</th>
-                  <th class="px-1 sm:px-2 py-2 w-[18%]">Ausw.</th>
-                  <th class="px-1 sm:px-2 py-2 w-[10%] text-center">Erg.</th>
+                  <th class="px-6 py-4">Spieltag</th>
+                  <th class="px-6 py-4">Datum</th>
+                  <th class="px-6 py-4">Uhrzeit</th>
+                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Heim</th>
+                  <th class="px-6 py-4">Auswärts</th>
+                  <th class="px-6 py-4 text-center">Ergebnis</th>
                 </tr>
               </thead>
               <tbody id="homeUpcomingMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -294,49 +290,49 @@
     <section id="content-matches" class="space-y-6 hidden">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold font-display text-white">Spielplan</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf ein Team der SVG, um es bei 3k aufzurufen.</p>
         </div>
         
-        <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 glass-card p-2 rounded-2xl">
-          <div class="col-span-2 sm:col-span-1 flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+        <div class="flex flex-wrap items-center gap-2 glass-card p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Filter:
           </div>
           
-          <select id="filterMatchday" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+          <select id="filterMatchday" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Spieltag</option>
           </select>
 
-          <select id="filterTeam" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+          <select id="filterTeam" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Teams</option>
           </select>
 
-          <select id="filterDate" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+          <select id="filterDate" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Datum</option>
           </select>
 
-          <select id="filterLocation" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer w-full sm:w-auto">
+          <select id="filterLocation" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
             <option value="">Spielort</option>
           </select>
 
-          <button onclick="resetMatchFilters()" class="col-span-2 sm:col-span-1 text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center justify-center gap-1.5">
+          <button onclick="resetMatchFilters()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left text-white"></i> Reset
           </button>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-        <div class="w-full">
-          <table class="w-full text-left text-[10px] sm:text-xs text-neutral-300 table-fixed">
-            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[9px] sm:text-[10px] font-bold tracking-wider border-b border-neutral-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-1 sm:px-2 py-2 w-[10%]">Stg.</th>
-                <th class="px-1 sm:px-2 py-2 w-[16%]">Datum</th>
-                <th class="px-1 sm:px-2 py-2 w-[12%]">Zeit</th>
-                <th class="px-1 sm:px-2 py-2 w-[16%]">Ort</th>
-                <th class="px-1 sm:px-2 py-2 w-[18%]">Heim</th>
-                <th class="px-1 sm:px-2 py-2 w-[18%]">Ausw.</th>
-                <th class="px-1 sm:px-2 py-2 w-[10%] text-center">Erg.</th>
+                <th class="px-6 py-4">Spieltag</th>
+                <th class="px-6 py-4">Datum</th>
+                <th class="px-6 py-4">Uhrzeit</th>
+                <th class="px-6 py-4">Spielort</th>
+                <th class="px-6 py-4">Heim</th>
+                <th class="px-6 py-4">Auswärts</th>
+                <th class="px-6 py-4 text-center">Ergebnis</th>
               </tr>
             </thead>
             <tbody id="matchesTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -349,11 +345,11 @@
     <section id="content-players" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold font-display text-white">Spielerdatenbank</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Spielerdatenbank</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spielerin oder einen Spieler, um das Profil aufzurufen.</p>
         </div>
         
-        <div class="flex items-center gap-2 glass-card p-2 rounded-2xl w-full sm:w-auto justify-between sm:justify-start">
+        <div class="flex items-center gap-2 glass-card p-2 rounded-2xl">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Filter:
           </div>
@@ -374,13 +370,13 @@
       </div>
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-        <div class="w-full">
-          <table class="w-full text-left text-xs sm:text-sm text-neutral-300 table-fixed">
-            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[10px] sm:text-xs">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs">
               <tr>
-                <th class="px-3 py-3 w-[15%]">ID</th>
-                <th class="px-3 py-3 w-[50%]">Name</th>
-                <th class="px-3 py-3 w-[35%]">Team</th>
+                <th class="px-6 py-3">ID</th>
+                <th class="px-6 py-3">Name</th>
+                <th class="px-6 py-3">Team</th>
               </tr>
             </thead>
             <tbody id="playersTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -393,43 +389,43 @@
     <section id="content-gameStats" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold font-display text-white">Spielstatistiken</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Spielstatistiken</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-        <div class="w-full">
-          <table class="w-full text-left text-[9px] sm:text-xs text-neutral-300 table-fixed">
-            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[8px] sm:text-[10px] font-bold tracking-tighter sm:tracking-wider border-b border-neutral-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-1 py-2 w-[6%] text-center">#</th>
-                <th onclick="setGameStatsSort('player')" class="px-1 py-2 w-[22%] sortable-header">
-                  Spieler<span id="gsort-icon-player"></span>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header">
+                  Spieler <span id="gsort-icon-player" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('games')" class="px-1 py-2 w-[9%] sortable-header">
-                  Sp.<span id="gsort-icon-games"></span>
+                <th onclick="setGameStatsSort('games')" class="px-4 py-4 sortable-header">
+                  Spiele <span id="gsort-icon-games" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('legs')" class="px-1 py-2 w-[8%] sortable-header">
-                  Legs<span id="gsort-icon-legs"></span>
+                <th onclick="setGameStatsSort('legs')" class="px-4 py-4 sortable-header">
+                  Legs <span id="gsort-icon-legs" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('legsWonPct')" class="px-1 py-2 w-[11%] sortable-header">
-                  Legs %<span id="gsort-icon-legsWonPct"></span>
+                <th onclick="setGameStatsSort('legsWonPct')" class="px-4 py-4 sortable-header">
+                  gewonnene Legs in % <span id="gsort-icon-legsWonPct" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('winsSingle')" class="px-1 py-2 w-[8%] sortable-header">
-                  S.Einz<span id="gsort-icon-winsSingle"></span>
+                <th onclick="setGameStatsSort('winsSingle')" class="px-4 py-4 sortable-header">
+                  Siege (Einzel) <span id="gsort-icon-winsSingle" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('winRateSingle')" class="px-1 py-2 w-[11%] sortable-header">
-                  % Einz<span id="gsort-icon-winRateSingle"></span>
+                <th onclick="setGameStatsSort('winRateSingle')" class="px-4 py-4 sortable-header">
+                  Siegquote (Einzel) <span id="gsort-icon-winRateSingle" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('winsDouble')" class="px-1 py-2 w-[8%] sortable-header">
-                  S.Dop<span id="gsort-icon-winsDouble"></span>
+                <th onclick="setGameStatsSort('winsDouble')" class="px-4 py-4 sortable-header">
+                  Siege (Doppel) <span id="gsort-icon-winsDouble" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('winRateDouble')" class="px-1 py-2 w-[9%] sortable-header">
-                  % Dop<span id="gsort-icon-winRateDouble"></span>
+                <th onclick="setGameStatsSort('winRateDouble')" class="px-4 py-4 sortable-header">
+                  Siegquote (Doppel) <span id="gsort-icon-winRateDouble" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('winRateTotal')" class="px-1 py-2 w-[8%] sortable-header">
-                  % Ges<span id="gsort-icon-winRateTotal"></span>
+                <th onclick="setGameStatsSort('winRateTotal')" class="px-4 py-4 sortable-header">
+                  Siegquote (Gesamt) <span id="gsort-icon-winRateTotal" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -443,43 +439,43 @@
     <section id="content-stats" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold font-display text-white">Averages</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Averages</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-        <div class="w-full">
-          <table class="w-full text-left text-[9px] sm:text-xs text-neutral-300 table-fixed">
-            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[8px] sm:text-[10px] font-bold tracking-tighter sm:tracking-wider border-b border-neutral-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-1 py-2 w-[6%] text-center">#</th>
-                <th onclick="setStatsSort('player')" class="px-1 py-2 w-[22%] sortable-header">
-                  Spieler<span id="sort-icon-player"></span>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header">
+                  Spieler <span id="sort-icon-player" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('avgSingle')" class="px-1 py-2 w-[9%] sortable-header">
-                  Avg E<span id="sort-icon-avgSingle"></span>
+                <th onclick="setStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
+                  Saison-Average (Einzel) <span id="sort-icon-avgSingle" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('avgDouble')" class="px-1 py-2 w-[9%] sortable-header">
-                  Avg D<span id="sort-icon-avgDouble"></span>
+                <th onclick="setStatsSort('avgDouble')" class="px-4 py-4 sortable-header">
+                  Saison-Average (Doppel) <span id="sort-icon-avgDouble" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('first9Single')" class="px-1 py-2 w-[9%] sortable-header">
-                  F9 E<span id="sort-icon-first9Single"></span>
+                <th onclick="setStatsSort('first9Single')" class="px-4 py-4 sortable-header">
+                  First-9-Saison-Average (Einzel) <span id="sort-icon-first9Single" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('first9Double')" class="px-1 py-2 w-[9%] sortable-header">
-                  F9 D<span id="sort-icon-first9Double"></span>
+                <th onclick="setStatsSort('first9Double')" class="px-4 py-4 sortable-header">
+                  First-9-Saison-Average (Doppel) <span id="sort-icon-first9Double" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('maxAvgSingle')" class="px-1 py-2 w-[9%] sortable-header">
-                  Max E<span id="sort-icon-maxAvgSingle"></span>
+                <th onclick="setStatsSort('maxAvgSingle')" class="px-4 py-4 sortable-header">
+                  Höchster Average (Einzel) <span id="sort-icon-maxAvgSingle" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('maxAvgDouble')" class="px-1 py-2 w-[9%] sortable-header">
-                  Max D<span id="sort-icon-maxAvgDouble"></span>
+                <th onclick="setStatsSort('maxAvgDouble')" class="px-4 py-4 sortable-header">
+                  Höchster Average (Doppel) <span id="sort-icon-maxAvgDouble" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('maxFirst9Single')" class="px-1 py-2 w-[9%] sortable-header">
-                  M.F9E<span id="sort-icon-maxFirst9Single"></span>
+                <th onclick="setStatsSort('maxFirst9Single')" class="px-4 py-4 sortable-header">
+                  Höchster First 9 (Einzel) <span id="sort-icon-maxFirst9Single" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('maxFirst9Double')" class="px-1 py-2 w-[9%] sortable-header">
-                  M.F9D<span id="sort-icon-maxFirst9Double"></span>
+                <th onclick="setStatsSort('maxFirst9Double')" class="px-4 py-4 sortable-header">
+                  Höchster First 9 (Doppel) <span id="sort-icon-maxFirst9Double" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -493,43 +489,43 @@
     <section id="content-records" class="space-y-6 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold font-display text-white">Bestleistungen</h2>
+          <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-        <div class="w-full">
-          <table class="w-full text-left text-[9px] sm:text-xs text-neutral-300 table-fixed">
-            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-[8px] sm:text-[10px] font-bold tracking-tighter sm:tracking-wider border-b border-neutral-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-1 py-2 w-[6%] text-center">#</th>
-                <th onclick="setRecordsSort('player')" class="px-1 py-2 w-[22%] sortable-header">
-                  Spieler<span id="rsort-icon-player"></span>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header">
+                  Spieler <span id="rsort-icon-player" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('specials')" class="px-1 py-2 w-[8%] sortable-header">
-                  Spec.<span id="rsort-icon-specials"></span>
+                <th onclick="setRecordsSort('specials')" class="px-4 py-4 sortable-header">
+                  Specials <span id="rsort-icon-specials" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('r180')" class="px-1 py-2 w-[7%] sortable-header">
-                  180<span id="rsort-icon-r180"></span>
+                <th onclick="setRecordsSort('r180')" class="px-4 py-4 sortable-header">
+                  180 <span id="rsort-icon-r180" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('r140')" class="px-1 py-2 w-[8%] sortable-header">
-                  140+<span id="rsort-icon-r140"></span>
+                <th onclick="setRecordsSort('r140')" class="px-4 py-4 sortable-header">
+                  140+ <span id="rsort-icon-r140" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('highfinish')" class="px-1 py-2 w-[11%] sortable-header">
-                  HighF.<span id="rsort-icon-highfinish"></span>
+                <th onclick="setRecordsSort('highfinish')" class="px-4 py-4 sortable-header">
+                  Highfinish <span id="rsort-icon-highfinish" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('shortgame')" class="px-1 py-2 w-[10%] sortable-header">
-                  ShortG.<span id="rsort-icon-shortgame"></span>
+                <th onclick="setRecordsSort('shortgame')" class="px-4 py-4 sortable-header">
+                  Shortgames <span id="rsort-icon-shortgame" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('shortgameChance')" class="px-1 py-2 w-[9%] sortable-header">
-                  Ch.SG<span id="rsort-icon-shortgameChance"></span>
+                <th onclick="setRecordsSort('shortgameChance')" class="px-4 py-4 sortable-header">
+                  Chance auf Shortgame <span id="rsort-icon-shortgameChance" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('maxSpecialsMatchday')" class="px-1 py-2 w-[10%] sortable-header">
-                  M.SpecTag<span id="rsort-icon-maxSpecialsMatchday"></span>
+                <th onclick="setRecordsSort('maxSpecialsMatchday')" class="px-4 py-4 sortable-header">
+                  Meiste Specials an einem Spieltag <span id="rsort-icon-maxSpecialsMatchday" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('specialsPerGame')" class="px-1 py-2 w-[9%] sortable-header">
-                  Spec/Sp<span id="rsort-icon-specialsPerGame"></span>
+                <th onclick="setRecordsSort('specialsPerGame')" class="px-4 py-4 sortable-header">
+                  Specials pro Spiel <span id="rsort-icon-specialsPerGame" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -556,76 +552,76 @@
 
   <!-- Player Profile Modal -->
   <div id="playerModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-card bg-black border border-neutral-800 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
-      <div class="bg-neutral-950 p-4 sm:p-6 border-b border-neutral-800 flex justify-between items-start sticky top-0 z-10">
-        <div class="flex items-center gap-3 sm:gap-4">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-black border border-neutral-700 flex items-center justify-center text-white font-bold text-lg sm:text-xl flex-shrink-0">
+    <div class="glass-card bg-black border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="bg-neutral-950 p-6 border-b border-neutral-800 flex justify-between items-start">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-black border border-neutral-700 flex items-center justify-center text-white font-bold text-xl">
             <i class="fa-solid fa-user"></i>
           </div>
           <div>
-            <h3 id="modalPlayerName" class="text-lg sm:text-xl font-bold font-display text-white"></h3>
-            <p id="modalPlayerTeam" class="text-[10px] sm:text-xs font-semibold text-neutral-400 mt-0.5 uppercase tracking-wider"></p>
+            <h3 id="modalPlayerName" class="text-xl font-bold font-display text-white"></h3>
+            <p id="modalPlayerTeam" class="text-xs font-semibold text-neutral-400 mt-0.5 uppercase tracking-wider"></p>
           </div>
         </div>
-        <button onclick="closePlayerModal()" class="text-neutral-400 hover:text-white p-1.5 sm:p-2">
+        <button onclick="closePlayerModal()" class="text-neutral-400 hover:text-white p-2">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <div class="p-4 sm:p-6 space-y-4 sm:space-y-5">
+      <div class="p-6 space-y-5">
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-3 sm:p-4 rounded-2xl text-center">
-            <div class="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average</div>
-            <div id="modal3DartAvg" class="text-2xl sm:text-3xl font-black font-display text-white">-</div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average</div>
+            <div id="modal3DartAvg" class="text-3xl font-black font-display text-white">-</div>
           </div>
-          <div class="bg-black border border-neutral-800 p-3 sm:p-4 rounded-2xl text-center">
-            <div class="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First 9 (Saison)</div>
-            <div id="modalFirst9Avg" class="text-2xl sm:text-3xl font-black font-display text-neutral-300">-</div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First 9 (Saison)</div>
+            <div id="modalFirst9Avg" class="text-3xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-3 sm:p-4 rounded-2xl text-center">
-            <div class="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Einzel)</div>
-            <div id="modalMaxAvgSingle" class="text-xl sm:text-2xl font-black font-display text-white">-</div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Einzel)</div>
+            <div id="modalMaxAvgSingle" class="text-2xl font-black font-display text-white">-</div>
           </div>
-          <div class="bg-black border border-neutral-800 p-3 sm:p-4 rounded-2xl text-center">
-            <div class="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Doppel)</div>
-            <div id="modalMaxAvgDouble" class="text-xl sm:text-2xl font-black font-display text-neutral-300">-</div>
+          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Doppel)</div>
+            <div id="modalMaxAvgDouble" class="text-2xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-3 sm:p-3.5 rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-star text-white text-xs sm:text-sm"></i>
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <i class="fa-solid fa-star text-white"></i>
               <span class="text-xs font-medium text-neutral-300">180er</span>
             </div>
-            <span id="modal180s" class="font-extrabold text-white text-sm sm:text-base">0</span>
+            <span id="modal180s" class="font-extrabold text-white text-base">0</span>
           </div>
-          <div class="bg-black border border-neutral-800 p-3 sm:p-3.5 rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-fire text-neutral-400 text-xs sm:text-sm"></i>
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <i class="fa-solid fa-fire text-neutral-400"></i>
               <span class="text-xs font-medium text-neutral-300">140+</span>
             </div>
-            <span id="modal140s" class="font-extrabold text-neutral-200 text-sm sm:text-base">0</span>
+            <span id="modal140s" class="font-extrabold text-neutral-200 text-base">0</span>
           </div>
         </div>
 
         <div class="space-y-2.5">
-          <div class="bg-black border border-neutral-800 p-3 sm:p-3.5 rounded-xl">
-            <span class="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
+            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
             <span id="modalHighfinish" class="text-xs font-semibold text-white block break-words">Keine vorhanden</span>
           </div>
 
-          <div class="bg-black border border-neutral-800 p-3 sm:p-3.5 rounded-xl">
-            <span class="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
+          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
+            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
             <span id="modalShortgames" class="text-xs font-semibold text-neutral-300 block break-words">Keine vorhanden</span>
           </div>
         </div>
       </div>
 
-      <div class="bg-black px-4 sm:px-6 py-3 sm:py-4 border-t border-neutral-800 text-right sticky bottom-0">
+      <div class="bg-black px-6 py-4 border-t border-neutral-800 text-right">
         <button onclick="closePlayerModal()" class="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 text-xs font-semibold rounded-xl transition">
           Schließen
         </button>
@@ -1012,14 +1008,14 @@
 
       return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-1 sm:px-2 py-2 font-semibold text-white break-words">${m.matchday || '-'}</td>
-          <td class="px-1 sm:px-2 py-2 text-neutral-300 break-words">${formatDate(m.date)}</td>
-          <td class="px-1 sm:px-2 py-2 text-neutral-400 break-words">${formatTime(m.time || m.uhrzeit)}</td>
-          <td class="px-1 sm:px-2 py-2 text-neutral-300 break-words">${m.location || '-'}</td>
-          <td class="px-1 sm:px-2 py-2 text-white font-medium break-words">${getTeamLink(m.home)}</td>
-          <td class="px-1 sm:px-2 py-2 text-white font-medium break-words">${getTeamLink(m.away)}</td>
-          <td class="px-1 sm:px-2 py-2 text-center">
-            <span class="inline-block px-1 sm:px-2 py-0.5 rounded border font-extrabold text-[9px] sm:text-xs ${scoreStyleClass}">
+          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${formatDate(m.date)}</td>
+          <td class="px-6 py-4 text-neutral-400">${formatTime(m.time || m.uhrzeit)}</td>
+          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.home)}</td>
+          <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.away)}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm ${scoreStyleClass}">
               ${m.score || '-'}
             </span>
           </td>
@@ -1166,9 +1162,9 @@
 
       tbody.innerHTML = filteredPlayers.map(p => `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-3 py-3 text-xs text-neutral-500 break-words">${p.id || '-'}</td>
-          <td class="px-3 py-3 font-semibold text-white hover:underline cursor-pointer break-words" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
-          <td class="px-3 py-3 text-neutral-300 break-words">${p.team || '-'}</td>
+          <td class="px-6 py-4 text-xs text-neutral-500">${p.id || '-'}</td>
+          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
         </tr>
       `).join('');
     }
@@ -1310,16 +1306,16 @@
 
         return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-1 py-2 text-center text-neutral-500 font-bold break-words">${currentRank}</td>
-          <td class="px-1 py-2 font-semibold text-white hover:underline cursor-pointer break-words" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-1 py-2 text-neutral-300 break-words">${formattedGames}</td>
-          <td class="px-1 py-2 text-neutral-300 break-words">${g.legs ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-200 break-words">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
-          <td class="px-1 py-2 text-neutral-200 font-semibold break-words">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-200 break-words">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
-          <td class="px-1 py-2 text-neutral-300 font-semibold break-words">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-300 break-words">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
-          <td class="px-1 py-2 text-white font-extrabold break-words">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
+          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+          <td class="px-4 py-4 text-neutral-300">${formattedGames}</td>
+          <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
+          <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
         </tr>
       `;
       }).join('');
@@ -1402,16 +1398,16 @@
 
         return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-1 py-2 text-center text-neutral-500 font-bold break-words">${currentRank}</td>
-          <td class="px-1 py-2 font-semibold text-white hover:underline cursor-pointer break-words" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-1 py-2 text-white font-extrabold break-words">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
-          <td class="px-1 py-2 text-neutral-200 break-words">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
-          <td class="px-1 py-2 text-neutral-200 break-words">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
-          <td class="px-1 py-2 text-neutral-300 break-words">${formatNumber(s.first9Double ?? s.first9_double)}</td>
-          <td class="px-1 py-2 text-neutral-300 break-words">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
-          <td class="px-1 py-2 text-neutral-400 break-words">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
-          <td class="px-1 py-2 text-neutral-300 break-words">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
-          <td class="px-1 py-2 text-neutral-400 break-words">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
+          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+          <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
+          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
+          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
         </tr>
       `;
       }).join('');
@@ -1494,16 +1490,16 @@
 
         return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-1 py-2 text-center text-neutral-500 font-bold break-words">${currentRank}</td>
-          <td class="px-1 py-2 font-semibold text-white hover:underline cursor-pointer break-words" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-1 py-2 text-white font-bold break-words">${r.specials ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-200 font-semibold break-words">${r.r180 ?? r['180'] ?? 0}</td>
-          <td class="px-1 py-2 text-neutral-200 font-semibold break-words">${r.r140 ?? r['140'] ?? 0}</td>
-          <td class="px-1 py-2 text-neutral-300 font-semibold break-words">${r.highfinish ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-300 font-semibold break-words">${r.shortgame ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-400 break-words">${r.shortgameChance ?? r.shortgame_chance ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-400 break-words">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
-          <td class="px-1 py-2 text-neutral-400 break-words">${r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday ?? '-'}</td>
+          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+          <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.shortgameChance ?? r.shortgame_chance ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday ?? '-'}</td>
         </tr>
       `;
       }).join('');
