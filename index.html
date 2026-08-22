@@ -78,23 +78,6 @@
       background-color: rgba(255, 255, 255, 0.05);
       color: #ffffff;
     }
-
-    /* Dezente Farbhighlights für SVG-Ergebnisse */
-    .result-win {
-      background-color: rgba(16, 185, 129, 0.15);
-      border-color: rgba(16, 185, 129, 0.4);
-      color: #34d399;
-    }
-    .result-draw {
-      background-color: rgba(245, 158, 11, 0.15);
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fbbf24;
-    }
-    .result-loss {
-      background-color: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #f87171;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
@@ -753,10 +736,10 @@
 
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
-      const str = String(val).replace(',', '.').trim();
+      const str = String(val).replace(',', '.').replace('%', '').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
-      return str.includes('%') ? str : `${num.toFixed(1)}%`;
+      return `${num.toFixed(2)}%`;
     }
 
     function parseNumeric(val) {
@@ -923,7 +906,7 @@
 
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
-      const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${pad(now.getFullYear())}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
       try {
         await fetch(SHEETS_WEBAPP_URL, {
@@ -992,7 +975,7 @@
       if (locationSelect) locationSelect.innerHTML = locationOptions;
 
       if (homeMatchdaySelect) homeMatchdaySelect.innerHTML = matchdayOptions;
-      if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
+      if (homeTeamSelect) homeTeamSelect.innerHTML = homeTeamSelect ? teamOptions : '';
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
     }
@@ -1023,38 +1006,23 @@
     }
 
     function createMatchRowHTML(m) {
-      const scoreRaw = String(m.score || '-').trim();
-      const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0' || scoreRaw === '-';
-      
-      let scoreStyleClass = 'bg-black border-neutral-700 text-neutral-400';
+      let scoreRaw = String(m.score || '-').trim();
+      const isAwaySVG = m.away && /SVG[\w\d]*/i.test(m.away);
 
-      if (!isZeroZero) {
-        // SVG Ergebnis-Auswertung (Gewonnen / Unentschieden / Verloren)
-        const homeTeam = String(m.home || '').toUpperCase();
-        const awayTeam = String(m.away || '').toUpperCase();
-        const isSvgHome = homeTeam.includes('SVG');
-        const isSvgAway = awayTeam.includes('SVG');
-
-        const scoreParts = scoreRaw.split(/[:\-]/).map(p => parseInt(p.trim(), 10));
-
-        if (scoreParts.length === 2 && !isNaN(scoreParts[0]) && !isNaN(scoreParts[1])) {
-          const homeScore = scoreParts[0];
-          const awayScore = scoreParts[1];
-
-          if (homeScore === awayScore) {
-            scoreStyleClass = 'result-draw font-black';
-          } else if (isSvgHome) {
-            scoreStyleClass = homeScore > awayScore ? 'result-win font-black' : 'result-loss font-black';
-          } else if (isSvgAway) {
-            scoreStyleClass = awayScore > homeScore ? 'result-win font-black' : 'result-loss font-black';
-          } else {
-            // Falls kein SVG-Team beteiligt ist (Standardanzeige)
-            scoreStyleClass = 'bg-white border-white text-black font-black';
-          }
-        } else {
-          scoreStyleClass = 'bg-white border-white text-black font-black';
+      // Drehe Ergebnis bei Auswärtsspielen der SVG um
+      if (isAwaySVG && (scoreRaw.includes(':') || scoreRaw.includes('-'))) {
+        const separator = scoreRaw.includes(':') ? ':' : '-';
+        const parts = scoreRaw.split(separator).map(s => s.trim());
+        if (parts.length === 2) {
+          scoreRaw = `${parts[1]}${separator}${parts[0]}`;
         }
       }
+
+      const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
+      
+      const scoreStyleClass = isZeroZero
+        ? 'bg-black border-neutral-700 text-neutral-400'
+        : 'bg-white border-white text-black font-black';
 
       return `
         <tr class="hover:bg-neutral-900/60 transition">
@@ -1065,8 +1033,8 @@
           <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.home)}</td>
           <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.away)}</td>
           <td class="px-6 py-4 text-center">
-            <span class="inline-block px-3 py-1 rounded-lg border text-sm ${scoreStyleClass}">
-              ${m.score || '-'}
+            <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm ${scoreStyleClass}">
+              ${scoreRaw}
             </span>
           </td>
         </tr>
@@ -1547,9 +1515,9 @@
           <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
           <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${r.shortgameChance ?? r.shortgame_chance ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
           <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
         </tr>
       `;
       }).join('');
