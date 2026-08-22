@@ -181,6 +181,9 @@
         <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
         </button>
+        <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-table text-xs"></i> Tabelle
+        </button>
         <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
         </button>
@@ -345,6 +348,41 @@
             <tbody id="matchesTable" class="divide-y divide-neutral-800/60"></tbody>
           </table>
         </div>
+      </div>
+    </section>
+
+    <!-- Reiter: Tabelle -->
+    <section id="content-tables" class="space-y-6 hidden">
+      <div class="flex flex-row justify-between items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Ligatabellen</h2>
+          <p class="text-xs text-neutral-400 mt-1">Wähle ein Team aus, um die jeweilige Tabelle anzuzeigen.</p>
+        </div>
+        
+        <div class="flex items-center gap-2 glass-card p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Team:
+          </div>
+          <select id="tableTeamFilter" onchange="changeTableIframe()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1708/table">A-Team</option>
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1311/table">B-Team</option>
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1313/table">C-Team</option>
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1314/table">D-Team</option>
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1317/table">E-Team</option>
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1325/table">F-Team</option>
+            <option value="https://www.2k-dart-software.com/frontend/events/10/event/1326/table">G-Team</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl p-2 bg-white/5">
+        <iframe 
+          id="tableIframe" 
+          src="https://www.2k-dart-software.com/frontend/events/10/event/1708/table" 
+          class="w-full h-160 rounded-xl border-0" 
+          style="min-height: 650px;"
+          loading="lazy">
+        </iframe>
       </div>
     </section>
 
@@ -654,6 +692,14 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
+    function changeTableIframe() {
+      const select = document.getElementById('tableTeamFilter');
+      const iframe = document.getElementById('tableIframe');
+      if (select && iframe) {
+        iframe.src = select.value;
+      }
+    }
+
     function getTeamLink(teamName) {
       if (!teamName || teamName === '-') return '-';
       const cleanName = String(teamName).trim();
@@ -736,10 +782,10 @@
 
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
-      const str = String(val).replace(',', '.').replace('%', '').trim();
+      const str = String(val).replace(',', '.').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
-      return `${num.toFixed(2)}%`;
+      return str.includes('%') ? str : `${num.toFixed(1)}%`;
     }
 
     function parseNumeric(val) {
@@ -804,7 +850,7 @@
 
       if (globalSearchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
-        if (activeTab === 'matches' || activeTab === 'home') {
+        if (activeTab === 'matches' || activeTab === 'home' || activeTab === 'tables') {
           switchTab('players');
         }
       } else {
@@ -975,7 +1021,7 @@
       if (locationSelect) locationSelect.innerHTML = locationOptions;
 
       if (homeMatchdaySelect) homeMatchdaySelect.innerHTML = matchdayOptions;
-      if (homeTeamSelect) homeTeamSelect.innerHTML = homeTeamSelect ? teamOptions : '';
+      if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
     }
@@ -1006,18 +1052,7 @@
     }
 
     function createMatchRowHTML(m) {
-      let scoreRaw = String(m.score || '-').trim();
-      const isAwaySVG = m.away && /SVG[\w\d]*/i.test(m.away);
-
-      // Drehe Ergebnis bei Auswärtsspielen der SVG um
-      if (isAwaySVG && (scoreRaw.includes(':') || scoreRaw.includes('-'))) {
-        const separator = scoreRaw.includes(':') ? ':' : '-';
-        const parts = scoreRaw.split(separator).map(s => s.trim());
-        if (parts.length === 2) {
-          scoreRaw = `${parts[1]}${separator}${parts[0]}`;
-        }
-      }
-
+      const scoreRaw = String(m.score || '-').trim();
       const isZeroZero = scoreRaw === '0:0' || scoreRaw === '0-0' || scoreRaw === '0 : 0' || scoreRaw === '0 - 0';
       
       const scoreStyleClass = isZeroZero
@@ -1034,7 +1069,7 @@
           <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.away)}</td>
           <td class="px-6 py-4 text-center">
             <span class="inline-block px-3 py-1 rounded-lg border font-extrabold text-sm ${scoreStyleClass}">
-              ${scoreRaw}
+              ${m.score || '-'}
             </span>
           </td>
         </tr>
@@ -1515,9 +1550,9 @@
           <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
           <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.shortgameChance ?? r.shortgame_chance ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday ?? '-'}</td>
         </tr>
       `;
       }).join('');
