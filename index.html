@@ -731,15 +731,15 @@
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
-      return isNaN(num) ? val : num.toFixed(2).replace('.', ',');
+      return isNaN(num) ? val : num.toFixed(2);
     }
 
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
-      const str = String(val).replace('%', '').replace(',', '.').trim();
+      const str = String(val).replace(',', '.').replace('%', '').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
-      return `${num.toFixed(2).replace('.', ',')}%`;
+      return `${num.toFixed(2)}%`;
     }
 
     function parseNumeric(val) {
@@ -906,7 +906,7 @@
 
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
-      const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${pad(now.getFullYear())}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
       try {
         await fetch(SHEETS_WEBAPP_URL, {
@@ -1316,11 +1316,11 @@
           <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
           <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
           <td class="px-4 py-4 text-neutral-300">${formattedGames}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(g.legs)}</td>
+          <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${formatNumber(g.winsSingle ?? g.wins_single ?? g.siegeEinzel)}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${formatNumber(g.winsDouble ?? g.wins_double ?? g.siegeDoppel)}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
           <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
         </tr>
@@ -1499,13 +1499,13 @@
         <tr class="hover:bg-neutral-900/60 transition">
           <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
           <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-white font-bold">${formatNumber(r.specials)}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${formatNumber(r.r180 ?? r['180'])}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${formatNumber(r.r140 ?? r['140'])}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish || '-'}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${formatNumber(r.shortgame)}</td>
+          <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
+          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(r.maxSpecialsMatchday ?? r.max_specials_matchday)}</td>
+          <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
         </tr>
       `;
@@ -1524,8 +1524,8 @@
       document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
       document.getElementById('modalMaxAvgSingle').innerText = formatNumber(playerStats.maxAvgSingle ?? playerStats.max_avg_single);
       document.getElementById('modalMaxAvgDouble').innerText = formatNumber(playerStats.maxAvgDouble ?? playerStats.max_avg_double);
-      document.getElementById('modal180s').innerText = formatNumber(playerRecords.r180 ?? playerRecords['180']);
-      document.getElementById('modal140s').innerText = formatNumber(playerRecords.r140 ?? playerRecords['140']);
+      document.getElementById('modal180s').innerText = playerRecords.r180 ?? playerRecords['180'] ?? 0;
+      document.getElementById('modal140s').innerText = playerRecords.r140 ?? playerRecords['140'] ?? 0;
       document.getElementById('modalHighfinish').innerText = playerRecords.highfinish || 'Keine vorhanden';
       document.getElementById('modalShortgames').innerText = playerRecords.shortgame || 'Keine vorhanden';
 
